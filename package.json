@@ -1,0 +1,27 @@
+{
+  "name": "raspi_web_server",
+  "version": "1.0.0",
+  "description": "Backend for an app hosted on a Raspberry Pi",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "lint": "eslint ./"
+  },
+  "author": "Kvad",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "body-parser": "^1.20.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^8.5.1",
+    "passport": "^0.6.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0",
+    "sqlite3": "^5.1.2"
+  },
+  "devDependencies": {
+    "eslint": "^8.26.0"
+  }
+}
