@@ -4,7 +4,6 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
-const exitHandler = require('../utils/exit_handler');
 
 const _ERR_MSG_DB_NOT_INITIALIZED = 'Database instance not initialized';
 
@@ -32,11 +31,6 @@ class Database {
         }
       });
       console.log('Connected to Database.');
-
-      exitHandler.register(() => {
-        console.log('Closing database connection.');
-        this.close();
-      });
 
       return resolve();
     });
