@@ -2,26 +2,43 @@
 //  
 //===========================================================================
 const express = require('express');
-const handlers = require('./handler');
-const { EndpointHandler, AuthProtected } = require('../../modules/endpoint_handler');
+const { getHandler, validateHandler } = require('../../modules/endpoint_handler');
+const protectedRoute = require('../../modules/auth/protected_route');
+
+const validateSysinfo = validateHandler((req) => {
+  if (!!req.sysinfo && !!req.sysinfo.sse_handler) return;
+  const message = 'System Info service has not been initialized!';
+  throw new Error(message);
+});
+
+const getOsInfo = getHandler((req) => req.sysinfo.os());
+const getCpuInfo = getHandler((req) => req.sysinfo.cpu());
+const getMemoryInfo = getHandler((req) => req.sysinfo.memory());
+const getNetsatInfo = getHandler((req) => req.sysinfo.network());
+const getStorageInfo = getHandler((req) => req.sysinfo.hdd());
+const getSystimeInfo = getHandler((req) => req.sysinfo.systime.getAll());
+const getUptimeInfo = getHandler((req) => req.sysinfo.systime.getUptime());
+const getStartTimeInfo = getHandler((req) => req.sysinfo.systime.getStartTime());
+const getLocalTimeInfo = getHandler((req) => req.sysinfo.systime.getLocaltime());
+const getCpuUsageInfo = getHandler((req) => req.sysinfo.cpu_usage.measurements());
+const getAllSystemInfo = getHandler((req) => req.sysinfo.fetchAll());
+const streamHandler = (req, res, next) => req.sysinfo.sse_handler.handleRequest(req, res, next);
 
 const router = express.Router();
 
-const endpoint_handlers = [
-  new AuthProtected('/', EndpointHandler.METHOD_GET, handlers.fetchAll),
-  new AuthProtected('/os', EndpointHandler.METHOD_GET, handlers.os),
-  new AuthProtected('/cpu', EndpointHandler.METHOD_GET, handlers.cpu),
-  new AuthProtected('/memory', EndpointHandler.METHOD_GET, handlers.memory),
-  new AuthProtected('/netstat', EndpointHandler.METHOD_GET, handlers.netstat),
-  new AuthProtected('/storage', EndpointHandler.METHOD_GET, handlers.storage),
-  new AuthProtected('/time', EndpointHandler.METHOD_GET, handlers.systime),
-  new AuthProtected('/uptime', EndpointHandler.METHOD_GET, handlers.uptime),
-  new AuthProtected('/starttime', EndpointHandler.METHOD_GET, handlers.startTime),
-  new AuthProtected('/localtime', EndpointHandler.METHOD_GET, handlers.localtime),
-  new AuthProtected('/cpu-usage', EndpointHandler.METHOD_GET, handlers.cpuUsage),
-  new AuthProtected('/stream', EndpointHandler.METHOD_GET, handlers.streamHandler),
-];
+router.use(protectedRoute, validateSysinfo);
+router.get('/', getAllSystemInfo);
+router.get('/os', getOsInfo);
+router.get('/cpu', getCpuInfo);
+router.get('/memory', getMemoryInfo);
+router.get('/netstat', getNetsatInfo);
+router.get('/storage', getStorageInfo);
+router.get('/time', getSystimeInfo);
+router.get('/uptime', getUptimeInfo);
+router.get('/starttime', getStartTimeInfo);
+router.get('/localtime', getLocalTimeInfo);
+router.get('/cpu-usage', getCpuUsageInfo);
+router.get('/stream', streamHandler);
 
-router.use(handlers.validateSysinfo);
-module.exports = EndpointHandler.bindEndpoints(router, ...endpoint_handlers);
+module.exports = router;
 //===========================================================================

@@ -3,16 +3,14 @@
 //===========================================================================
 const express = require('express');
 const handlers = require('./handler');
-const { EndpointHandler, AuthProtected } = require('../../modules/endpoint_handler');
+const protectedRoute = require('../../modules/auth/protected_route');
 
 const router = express.Router();
 
-const endpoint_handlers = [
-  new EndpointHandler('/register', EndpointHandler.METHOD_POST, handlers.register),
-  new EndpointHandler('/login', EndpointHandler.METHOD_POST, handlers.login),
-  new AuthProtected('/user', EndpointHandler.METHOD_GET, handlers.userAuth),
-  new AuthProtected('/update_password', EndpointHandler.METHOD_POST, handlers.updatePassword),
-];
+router.post('/register', handlers.register);
+router.post('/login', handlers.login);
+router.get('/user', protectedRoute, handlers.userAuth);
+router.post('/update_password', protectedRoute, handlers.updatePassword);
 
-module.exports = EndpointHandler.bindEndpoints(router, ...endpoint_handlers);
+module.exports = router;
 //===========================================================================

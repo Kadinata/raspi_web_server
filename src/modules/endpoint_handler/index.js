@@ -1,7 +1,7 @@
-const EndpointHandler = require('./endpoint_handler');
-const AuthProtected = require('./auth_protected_endpoint');
+const BasicHandlers = require('./basic_handler');
+const ErrorHandlers = require('./error_handler');
 
 module.exports = {
-  EndpointHandler,
-  AuthProtected,
+  ...BasicHandlers,
+  ...ErrorHandlers,
 };
