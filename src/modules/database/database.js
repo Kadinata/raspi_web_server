@@ -10,11 +10,19 @@ const _ERR_MSG_DB_NOT_INITIALIZED = 'Database instance not initialized';
 
 class Database {
 
+  /**
+   * Object constructor
+   * @param {String} path_to_db_file - Path to the database file
+   */
   constructor(path_to_db_file) {
     this.instance = null;
     this.path_to_db_file = path_to_db_file;
   }
 
+  /**
+   * (async) Initializes the database instance. This would create a new SQLite DB instance.
+   * @returns {Promise} - A void promise on success, otherwise an error.
+   */
   init() {
     return new Promise((resolve, reject) => {
       if (this.instance !== null) return resolve();
@@ -37,6 +45,13 @@ class Database {
     });
   }
 
+  /**
+   * (async) Run a SQL command on the database without returning the result.
+   * Use this method for creating table or inserting a new row.
+   * @param {String} statement - SQL command to run 
+   * @param {Object} params - SQL parameters for the command
+   * @returns {Promise} - A void promise on success, otherwise an error.
+   */
   run(statement, params) {
     return new Promise((resolve, reject) => {
       if (this.instance === null) return reject(new Error(_ERR_MSG_DB_NOT_INITIALIZED));
@@ -46,6 +61,12 @@ class Database {
     });
   };
 
+  /**
+   * (async) Run a SQL query on the database and return the result.
+   * @param {String} statement - SQL query to run 
+   * @param {Object} params - SQL parameters for the query
+   * @returns {Promise} - A promise containing the query result on success, otherwise an error.
+   */
   get(statement, params) {
     return new Promise((resolve, reject) => {
       if (this.instance === null) return reject(new Error(_ERR_MSG_DB_NOT_INITIALIZED));
@@ -55,6 +76,9 @@ class Database {
     });
   }
 
+  /**
+   * Close down the SQLite database instance.
+   */
   close() {
     if (this.instance === null) return;
     this.instance.close((err) => {

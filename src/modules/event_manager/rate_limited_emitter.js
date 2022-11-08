@@ -13,6 +13,7 @@ const DEFAULT_RATE_LIMIT = 100;
 class RateLimitedEmitter extends EventEmitter {
 
   /**
+   * Object constructor
    * @param {number} rate_limit - The rate limit in milliseconds
    */
   constructor(rate_limit = DEFAULT_RATE_LIMIT) {
@@ -67,7 +68,10 @@ class RateLimitedEmitter extends EventEmitter {
     this._timeout = setTimeout(() => this._emit_data(), emit_wait_time_ms);
   }
 
-  /** */
+  /** 
+   * Register a callback that will be invoked whenever this emitter emits new data.
+   * @param {function} callback - The callback function to be invoked whenever new data are emitted.
+   */
   onData(callback) {
     this.on('data', (data) => callback(data));
   }

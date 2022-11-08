@@ -9,6 +9,7 @@ const logger = require('../logger').getLogger('SSE_HANDLER');
  */
 class SSEHandler extends EventEmitter {
 
+  /** Object constructor */
   constructor() {
     super();
 
@@ -66,10 +67,19 @@ class SSEHandler extends EventEmitter {
     logger.info(`SSE client removed; client_id: ${client_id}; client count: ${this.getClientCount()}`);
   }
 
+  /**
+   * Returns the total number of clients registered to this SSE handler instance.
+   * @returns {int} The number clients registered to this SSE handler instance
+   */
   getClientCount() {
     return Object.keys(this.clients).length;
   }
 
+  /**
+   * Register a client count change listener to this SSE handler instance.
+   * @param {function} callback - The callback function to be invoked 
+   * when the number of clients of this SSE Handler changes.
+   */
   onClientCountChange(callback) {
     this.on('clientChange', (count) => callback(count));
   }

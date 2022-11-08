@@ -5,10 +5,19 @@ const logger = require('../logger').getLogger('USERS');
 
 class User {
 
+  /**
+   * Object constructor
+   * @param {Database} database_handle - Instance of the database containing the user model.
+   */
   constructor(database_handle) {
     this.db_handle = database_handle;
   }
 
+  /**
+   * (async) Initializes the user model instance. 
+   * This will create a user table in the database if it does not exist.
+   * @returns {Promise} - A void promise if successful, otherwise an error.
+   */
   async init() {
     if (this.db_handle === null) return Promise.reject();
 
@@ -30,6 +39,14 @@ class User {
     }
   }
 
+  /**
+   * (async) Insert a new user to the database.
+   * @param {String} username - The user's username
+   * @param {String} password - The user's password hash
+   * @returns {Promise} - A void promise if successful, otherwise an error.
+   * 
+   * @warning Do NOT store raw passwords when creating new users.
+   */
   async create(username, password) {
     if (this.db_handle === null) return Promise.reject();
     const sql_command = (
@@ -49,6 +66,12 @@ class User {
     }
   }
 
+  /**
+   * (async) Query the database for a user with the provided user ID.
+   * @param {String} user_id - ID of the user to find
+   * @returns {Promise} - A promise containing the user data on success,
+   * a promise containing null if the user is not found, otherwise an error.
+   */
   async findById(user_id) {
     if (this.db_handle === null) return Promise.reject();
     const sql_command = (
@@ -66,6 +89,12 @@ class User {
     }
   }
 
+  /**
+   * (async) Query the database for a user with the provided username.
+   * @param {String} username - Username of the user to find.
+   * @returns {Promise} - A promise containing the user data on success,
+   * a promise containing null if the user is not found, otherwise an error.
+   */
   async findByUserName(username) {
     if (this.db_handle === null) return Promise.reject();
     const sql_command = (
@@ -82,6 +111,14 @@ class User {
     }
   }
 
+  /**
+   * (async) Update the password of the user with the given user ID.
+   * @param {String} user_id - ID of the user whose password to update
+   * @param {String} new_password - Hash of the user's new password
+   * @returns {Promise} - A void promise if successful, otherwise an error.
+   * 
+   * @warning Do NOT store raw passwords when creating new users.
+   */
   async updatePassword(user_id, new_password) {
     if (this.db_handle === null) return Promise.reject();
     const sql_command = "UPDATE users SET password = $password WHERE id = $id";
@@ -98,12 +135,16 @@ class User {
     }
   }
 
+  /**
+   * Remove sensitive information from the provided user data, such as password hash.
+   * @param {Object} user - User data to sanitize.
+   * @returns {Object} Sanitized user data.
+   */
   sanitize(user) {
     if (!user) return null;
     const { password, ...user_data } = user;
     return user_data;
   }
-
 }
 
 module.exports = User;

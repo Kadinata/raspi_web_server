@@ -11,6 +11,7 @@ const logger = require('../logger').getLogger('DATA_SAMPLER');
 class DataSampler extends EventEmitter {
 
   /**
+   * Object constructor
    * @param {any} dataSource - A function that returns the data or an object
    */
   constructor(dataSource) {
@@ -42,7 +43,10 @@ class DataSampler extends EventEmitter {
     this.emit('end');
   }
 
-  /** */
+  /**
+   * Register a callback to be invoked whenever a new sample is emitted.
+   * @param {function} callback - The function to be invoked whenever a new sample is emitted.
+   */
   onData(callback) {
     this.on('data', (data) => callback(data));
   }
@@ -70,5 +74,4 @@ class DataSampler extends EventEmitter {
 }
 
 module.exports = DataSampler;
-
 //===========================================================================
