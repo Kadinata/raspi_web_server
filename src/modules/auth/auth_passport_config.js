@@ -38,9 +38,9 @@ const handleLogin = async (auth, username, password, done) => {
   }
 };
 
-const handleJWTAuth = async (auth, jwt_payload, done) => {
+const handleJWTAuth = async (jwt_payload, done) => {
   try {
-    const user = await auth.findUserById(jwt_payload.id);
+    const { user = null } = jwt_payload;
     if (user === null) {
       const message = 'User not found';
       return done(null, null, { message });
@@ -77,7 +77,7 @@ const create = (auth, jwt_secret) => (passport) => {
 
   const jwt_auth_strategy = new JWTStrategy(
     jwt_strategy_options,
-    (payload, done) => handleJWTAuth(auth, payload, done)
+    (payload, done) => handleJWTAuth(payload, done)
   );
 
   passport.use(AuthMode.REGISTER, registration_strategy);

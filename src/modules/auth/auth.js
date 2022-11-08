@@ -16,13 +16,6 @@ class Auth {
     this.generateToken = jwt_signer(jwt_secret);
   }
 
-  provider() {
-    return (req, res, next) => {
-      req.auth = this;
-      next();
-    };
-  }
-
   async registerUser(username, password) {
     const user = await this._user_model.findByUserName(username);
     if (user !== null) return null;
