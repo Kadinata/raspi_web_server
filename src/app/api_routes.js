@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const express = require('express');
-const Errors = require('../modules/status_codes/error_codes');
+const { NotFoundHandler } = require('../modules/endpoint_handler');
 const authRoutes = require('../routes/auth');
 const sysinfoRoutes = require('../routes/sysinfo');
 const gpioRoutes = require('../routes/gpio');
@@ -20,7 +20,7 @@ routes.forEach(([path, handler]) => {
   router.use(path, (req, res, next) => handler(req, res, next));
 });
 
-router.use('*', (req, res, next) => next(new Errors.NotFound('Not found!')));
+router.use('*', NotFoundHandler);
 api_base.use('/api/v1', router);
 
 module.exports = api_base;
