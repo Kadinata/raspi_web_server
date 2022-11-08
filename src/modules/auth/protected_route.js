@@ -4,6 +4,7 @@
 const passport = require('passport');
 const AuthMode = require('./auth_mode');
 const Errors = require('../status_codes/error_codes');
+const logger = require('../logger').getLogger('AUTH');
 
 const protectedRoute = (req, res, next) => {
   const session = false;
@@ -16,10 +17,10 @@ const protectedRoute = (req, res, next) => {
     let message = '';
 
     if (err) {
-      console.error(`JWT auth error: ${err}`);
+      logger.error(`JWT auth error: ${err}`);
       message = 'An authentication error occurred.';
     } else {
-      console.error(`JWT auth not authenticated`, user);
+      logger.error(`JWT auth not authenticated`);
       message = 'User not authenticated.';
     }
 

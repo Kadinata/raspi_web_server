@@ -4,6 +4,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
+const logger = require('../logger').getLogger('DB');
 
 const _ERR_MSG_DB_NOT_INITIALIZED = 'Database instance not initialized';
 
@@ -26,12 +27,12 @@ class Database {
 
       this.instance = new sqlite3.Database(this.path_to_db_file, (err) => {
         if (err) {
-          console.log(err.message);
+          logger.error(`Database instance creation error: ${err.message}`);
           return reject(err);
         }
       });
-      console.log('Connected to Database.');
 
+      logger.info('Database instance created');
       return resolve();
     });
   }
@@ -57,11 +58,12 @@ class Database {
   close() {
     if (this.instance === null) return;
     this.instance.close((err) => {
-      if (err) return console.log(err.message);
-      console.log('Database connection has been closed.');
+      if (err) {
+        logger.error(`Error encountered while closing database: ${err.message}`);
+      }
+      logger.info('Database connection has been closed.');
     });
   }
-
 }
 
 module.exports = Database;

@@ -2,6 +2,7 @@
 //  
 //===========================================================================
 const passport = require('passport');
+const logger = require('../../modules/logger').getLogger('AUTH');
 const Errors = require('../../modules/status_codes/error_codes');
 
 const login = (req, res, next) => {
@@ -9,14 +10,14 @@ const login = (req, res, next) => {
   passport.authenticate('login', { session }, (err, user, info) => {
 
     if (err !== null) {
-      console.error(`Login Error: ${err}`);
+      logger.error(`Login Error: ${err}`);
       const message = 'An internal error occurred';
       return next(new Errors.InternalServerError(message));
     }
 
     if (!user) {
       const { message } = info;
-      console.error(`Login Error: ${message}`);
+      logger.error(`Login Error: ${message}`);
       return next(new Errors.Unauthorized(message));
     }
 
@@ -25,12 +26,15 @@ const login = (req, res, next) => {
         return next(new Errors.Unauthorized(err));
       }
 
-      const token = req.auth.generateToken(user, 60 * 60);
+      const payload = { user };
+      const token = req.auth.generateToken(payload, 60 * 60);
       const auth = true;
       const message = 'Login successful';
       const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+      logger.info(`User authentication successful; user_id: ${user.id}; username: ${user.username}`);
       res.cookie('jwt', token, { expires });
-      res.json({ auth, token, message });
+      res.json({ auth, message });
     });
 
   })(req, res, next);
@@ -41,16 +45,18 @@ const register = (req, res, next) => {
 
   passport.authenticate('register', { session }, (err, user, info) => {
     if (err !== null) {
-      console.error(`Register Error: ${err}`);
+      logger.error(`User registration error: ${err}`);
       const message = 'An internal error occurred';
       return next(new Errors.InternalServerError(message));
     }
 
     if (info !== undefined) {
       const { message } = info;
-      console.error(`Register Error: ${message}`);
+      logger.error(`Register Error: ${message}`);
       return next(new Errors.Forbidden(message));
     }
+
+    logger.info(`User registration successful; user_id: ${user.id}; username: ${user.username}`);
 
     req.login(user, { session }, async () => {
       const status = 'success';

@@ -2,6 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
+const logger = require('../logger').getLogger('SSE_HANDLER');
 
 /** 
  * A class for managing server-sent event (SSE) listeners
@@ -29,8 +30,6 @@ class SSEHandler extends EventEmitter {
       'Cache-Control': 'no-cache'
     };
     res.writeHead(200, headers);
-    // console.log(this instanceof SSEHandler);
-    // console.log(this.clients);
     this.addClient(req, res);
   }
 
@@ -46,7 +45,7 @@ class SSEHandler extends EventEmitter {
     this.clients[`${client_id}`] = res;
     req.on('close', () => this.removeClient(client_id));
     this._emit_client_change();
-    // console.log(`SSE: Client Added: ${client_id}`);
+    logger.info(`SSE client added; client_id: ${client_id}; client count: ${this.getClientCount()}`);
     return client_id;
   }
 
@@ -64,7 +63,11 @@ class SSEHandler extends EventEmitter {
     removed.end();
     this.clients = clients;
     this._emit_client_change();
-    // console.log(`SSE: Client Removed: ${client_id}`);
+    logger.info(`SSE client removed; client_id: ${client_id}; client count: ${this.getClientCount()}`);
+  }
+
+  getClientCount() {
+    return Object.keys(this.clients).length;
   }
 
   onClientCountChange(callback) {
@@ -76,7 +79,6 @@ class SSEHandler extends EventEmitter {
    * @param {object} data - Data to push to the clients
    */
   send(data) {
-    // console.log(`SSE: Sending data`);
     const payload = `data: ${JSON.stringify(data)}\n\n`;
     Object.values(this.clients).forEach(res => res.write(payload));
   }

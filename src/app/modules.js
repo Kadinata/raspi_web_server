@@ -9,6 +9,7 @@ const sysinfoModule = require('../modules/sysinfo');
 const GpioModule = require('../modules/gpio');
 const sse = require('../modules/event_manager/sse_handler');
 const exitHandler = require('../modules/utils/exit_handler');
+const logger = require('../modules/logger').getLogger('APP_MODULE');
 
 const DB_FILE = path.join(__dirname, '../../app_data/db/database.db');
 const JWT_SECRET_FILE = path.join(__dirname, '../../app_data/jwt/secret');
@@ -21,6 +22,8 @@ const createProvider = (auth, sysinfo, gpio) => () => (req, res, next) => {
 };
 
 const initialize = async () => {
+
+  logger.info('Initializing app modules...');
 
   const jwt_secret = await jwtsm.load_or_create(JWT_SECRET_FILE);
 
@@ -45,9 +48,11 @@ const initialize = async () => {
   const provider = createProvider(auth, sysinfo, gpio);
 
   exitHandler.register(() => {
+    gpio.destroy();
     db.close();
   });
 
+  logger.info('Modules initialization complete');
   return { auth, sysinfo, gpio, provider };
 };
 

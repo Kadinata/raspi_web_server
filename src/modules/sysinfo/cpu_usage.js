@@ -1,9 +1,9 @@
 //===========================================================================
 //  
 //===========================================================================
-'use-strict';
 const os = require('os');
 const DataSampler = require('../event_manager/data_sampler');
+const logger = require('../logger').getLogger('CPU_USAGE');
 
 /**
  * Calculates the total usage and total run time of a cpu and returns the results.
@@ -38,7 +38,7 @@ class CpuUsage extends DataSampler {
     const interval = this.prev_usages.timestamp;
     this.snapshot = { interval, ...this.prev_usages };
     setTimeout(() => this.measure(), 200);
-    console.log('CPU Usage instance initialized.');
+    logger.info('CPU Usage instance initialized');
   }
 
   get measurements() {

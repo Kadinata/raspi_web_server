@@ -9,6 +9,7 @@ const network = require('./network');
 const systime = require('./systime');
 const CpuUsage = require('./cpu_usage');
 const sysinfoStream = require('./stream');
+const logger = require('../logger').getLogger('SYS_INFO');
 
 const CPU_USAGE_SAMPLE_PERIOD = 10000;
 
@@ -38,7 +39,7 @@ const initialize = (stream_listener_cb) => {
   const sysinfo = { memory, os, cpu, hdd, network, systime, cpu_usage, fetchAll };
   const stream = sysinfoStream.initialize(sysinfo, stream_listener_cb);
 
-  console.log('System info module initialized.');
+  logger.info('System info module initialized');
   return { ...sysinfo, stream };
 };
 

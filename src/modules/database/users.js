@@ -1,6 +1,8 @@
 //===========================================================================
 //  
 //===========================================================================
+const logger = require('../logger').getLogger('USERS');
+
 class User {
 
   constructor(database_handle) {
@@ -19,12 +21,11 @@ class User {
       )"
     );
 
-    console.log("Creating User table");
     try {
       await this.db_handle.run(sql_command);
-      console.log('User table created');
+      logger.info('User table created');
     } catch (err) {
-      console.log("Error during user table creation", err);
+      logger.error(`An error occurred while creating a user table: ${err}`);
       throw err;
     }
   }
@@ -39,12 +40,11 @@ class User {
       $username: username,
       $password: password,
     };
-    console.log(`Creating user: ${username}`);
     try {
       await this.db_handle.run(sql_command, sql_params);
-      console.log("User created: ", username);
+      logger.info(`User created; username: ${username}`);
     } catch (err) {
-      console.log("Error while creating user", err);
+      logger.error(`An error occurred while creating user ${username}: ${err}`);
       throw err;
     }
   }
@@ -61,7 +61,7 @@ class User {
       const user = await this.db_handle.get(sql_command, sql_params);
       return user;
     } catch (err) {
-      console.log("Error while finding user by ID", err);
+      logger.error(`An error occurred while finding user by ID: ${user_id}; error: ${err}`);
       throw err;
     }
   }
@@ -77,7 +77,7 @@ class User {
       const user = await this.db_handle.get(sql_command, sql_params);
       return user;
     } catch (err) {
-      console.log("Error while finding user by Username", err);
+      logger.error(`An error occurred while finding user by username: ${username}; error: ${err}`);
       throw err;
     }
   }
@@ -89,12 +89,11 @@ class User {
       $id: user_id,
       $password: new_password,
     };
-    console.log(`Updating user password.`);
     try {
       await this.db_handle.run(sql_command, sql_params);
-      console.log("User password updated");
+      logger.info(`Successfully updated the password of user with ID ${user_id}`);
     } catch (err) {
-      console.log("Error while updating user password", err);
+      logger.error(`An error occurred while updating password of user with ID ${user_id}; ${err}`);
       throw err;
     }
   }

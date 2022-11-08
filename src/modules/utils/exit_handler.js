@@ -1,17 +1,18 @@
 //===========================================================================
 //  
 //===========================================================================
-'use-strict';
 const process = require('process');
+const logger = require('../logger').getLogger('EXIT_HANDLER');
 
 const _callbacks = [];
 
 const register = (callback) => {
   _callbacks.push(callback);
+  logger.info(`Exit handler callback registered. Total count: ${_callbacks.length}`);
 };
 
 const _exit_handler = (code, reason) => {
-  console.log(`Process exit event with code: ${code}; reason: ${reason}`);
+  logger.info(`Process exit event with code: ${code}; reason: ${reason}`);
   for (const callback of _callbacks) {
     (() => callback())();
   }
@@ -21,7 +22,7 @@ const _exit_handler = (code, reason) => {
 process.on('exit', (code) => _exit_handler(code, 'exit'));
 process.on('SIGINT', (code) => _exit_handler(code, 'SIGINT'));
 process.on('uncaughtException', (err, origin) => {
-  console.log('An uncaught exception occurred.', {err, origin});
+  logger.error(`An uncaught exception occurred. {${err}, ${origin}}`);
 });
 
 module.exports = {

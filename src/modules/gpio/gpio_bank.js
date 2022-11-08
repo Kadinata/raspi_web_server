@@ -33,11 +33,6 @@ class GpioBank {
         this._pins.push(new Gpio(pin_num, direction, edge, options));
       }
     }
-
-    exitHandler.register(() => {
-      console.log('Cleaning up GPIO.');
-      this.destroy();
-    });
   }
 
   static get FLAG_PIN_LOCKED() {

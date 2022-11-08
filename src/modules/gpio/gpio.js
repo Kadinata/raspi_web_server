@@ -3,6 +3,7 @@
 //===========================================================================
 const GpioBank = require('./gpio_bank');
 const RateLimitedEmitter = require('../event_manager/rate_limited_emitter');
+const logger = require('../logger').getLogger('GPIO');
 
 const STREAM_RATE_LIMIT = 100;
 
@@ -14,7 +15,7 @@ class Gpio extends RateLimitedEmitter {
     this._gpio_bank.getUsablePins().forEach((pin_num) => {
       this._gpio_bank.watch(pin_num, (err, value) => this._emit_pin_state(pin_num, err));
     });
-    console.log('Gpio created');
+    logger.info('GPIO instance created');
   };
 
   setPinStates(pinStates = {}) {
@@ -24,7 +25,7 @@ class Gpio extends RateLimitedEmitter {
       const pin_num = parseInt(num);
       if (isNaN(pin_num) || isNaN(state)) {
         const message = 'Provided pin number or state is not a number.';
-        console.log(message);
+        logger.error(message);
         throw new Error(message);
       }
       this._gpio_bank.setPinState(pin_num, state);
@@ -48,17 +49,18 @@ class Gpio extends RateLimitedEmitter {
 
   destroy() {
     this._gpio_bank.destroy();
+    logger.info('GPIO instance has been destroyed');
   }
 
   _emit_pin_state(pin_num, err) {
     if (err) {
-      console.log('Pin watch error:', pin_num, err);
+      logger.error(`Pin ${pin_num} watch error: ${err}`);
       return;
     }
     const pin = this._gpio_bank.pin(pin_num);
     let value = pin.readSync() ? GpioBank.FLAG_PIN_HIGH : 0x00;
     value |= pin.direction() === 'out' ? GpioBank.FLAG_PIN_OENABLE : 0x00;
-    console.log({ pin_num, value, err });
+    logger.info(`${{ pin_num, value, err }}`);
     this.next({ [pin_num]: value });
   }
 }

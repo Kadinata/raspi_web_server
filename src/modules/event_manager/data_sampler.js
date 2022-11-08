@@ -2,6 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
+const logger = require('../logger').getLogger('DATA_SAMPLER');
 
 /** 
  * A class that samples data from the provided source
@@ -28,14 +29,14 @@ class DataSampler extends EventEmitter {
    */
   start(period) {
     if (this.isRunning()) return;
-    console.log(`Sampler: started @${period} ms`)
+    logger.info(`Data sampler started @${period} ms`);
     this.interval = setInterval(() => this._sample_data(), period);
   }
 
   /** Stops the data sampler */
   stop() {
     if (!this.isRunning()) return;
-    console.log('Sampler: stopped');
+    logger.info('Data sampler stopped');
     clearInterval(this.interval);
     this.interval = null;
     this.emit('end');
@@ -60,8 +61,8 @@ class DataSampler extends EventEmitter {
       try {
         const data = await this.dataSource();
         this.emit('data', data);
-        // console.log('Sampler: data emitted');
       } catch (err) {
+        logger.error(`An error occurred while sampling data. ${err}`);
         this.emit('error', err);
       }
     })();
