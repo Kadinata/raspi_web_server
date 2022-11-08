@@ -9,7 +9,7 @@ const get_host_ip = async () => {
   const command = 'hostname -I';
   try {
     const response = await exec_promise(command);
-    return response.trim();
+    return response.trim().split(' ');
   } catch (err) {
     return Promise.reject(err);
   }

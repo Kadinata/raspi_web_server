@@ -6,7 +6,7 @@ const os = require('os');
 const serverStartTime = Date.now();
 
 const getStartTime = () => serverStartTime;
-const getUptime = () => os.uptime();
+const getUptime = () => (os.uptime() | 0);
 const getLocaltime = () => {
 
   const date = new Date();
