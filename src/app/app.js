@@ -4,7 +4,6 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const passport = require('passport');
 const logger = require('../modules/logger').getLogger('APP');
 const static_route = require('../routes/static');
 const app_modules = require('./modules');
@@ -19,7 +18,7 @@ const start = async () => {
   const port = process.env.port || DEFAULT_PORT;
 
   const cors_options = {
-    origin: 'http://localhost:3000',
+    origin: `http://localhost:{port}`,
     credentials: true,
   };
 
@@ -28,17 +27,15 @@ const start = async () => {
   const modules = await app_modules.initialize();
   const app = express();
 
-  modules.auth.configurePassport(passport);
-
   app.set('json spaces', 2);
   app.use(cors(cors_options));
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(passport.initialize());
+  app.use(modules.auth.passport.initialize());
   app.use(modules.provider());
   app.use(requestLogger);
-  app.use(apiRoutes);
+  app.use(apiRoutes.initialize('/api/v1'));
   app.use(static_route);
   app.use(ErrorHandler);
 

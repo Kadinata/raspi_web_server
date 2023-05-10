@@ -85,5 +85,10 @@ const create = (auth, jwt_secret) => (passport) => {
   passport.use(AuthMode.JWT, jwt_auth_strategy);
 };
 
-module.exports = { create };
+const configure = (auth, jwt_secret, passport) => {
+  const configurePassport = create(auth, jwt_secret);
+  configurePassport(passport);
+};
+
+module.exports = { create, configure };
 //===========================================================================

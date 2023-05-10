@@ -7,21 +7,19 @@ const authRoutes = require('../routes/auth');
 const sysinfoRoutes = require('../routes/sysinfo');
 const gpioRoutes = require('../routes/gpio');
 
-const router = express.Router();
-const api_base = express.Router();
+const initialize = (path) => {
+  const router = express.Router();
+  const api_base = express.Router();
 
-const routes = [
-  ['/auth', authRoutes],
-  ['/sysinfo', sysinfoRoutes],
-  ['/gpio', gpioRoutes],
-];
+  router.use('/auth', authRoutes.initialize());
+  router.use('/sysinfo', sysinfoRoutes.initialize());
+  router.use('/gpio', gpioRoutes.initialize());
+  router.use('*', NotFoundHandler);
 
-routes.forEach(([path, handler]) => {
-  router.use(path, (req, res, next) => handler(req, res, next));
-});
+  api_base.use(path, router);
 
-router.use('*', NotFoundHandler);
-api_base.use('/api/v1', router);
+  return api_base;
+};
 
-module.exports = api_base;
+module.exports = { initialize };
 //===========================================================================

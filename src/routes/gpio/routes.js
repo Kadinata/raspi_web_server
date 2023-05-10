@@ -11,18 +11,18 @@ const validateGpio = validateHandler((req) => {
   throw new Error(message);
 });
 
-const getGpioPinStates = getHandler((req) => req.gpio.getPinStates());
-const getUsableGpioPins = getHandler((req) => req.gpio.getUsablePins());
-const handleGpioPostRequest = postHandler((req, payload) => req.gpio.setPinStates(payload));
-const streamHandler = (req, res, next) => req.gpio.sse_handler.handleRequest(req, res, next);
+const initialize = () => {
 
-const router = express.Router();
+  const router = express.Router();
 
-router.use(protectedRoute, validateGpio);
-router.post('/', handleGpioPostRequest);
-router.get('/', getGpioPinStates);
-router.get('/usable_pins', getUsableGpioPins);
-router.get('/stream', streamHandler);
+  router.use(protectedRoute, validateGpio);
+  router.post('/', postHandler((req, payload) => req.gpio.setPinStates(payload)));
+  router.get('/', getHandler((req) => req.gpio.getPinStates()));
+  router.get('/usable_pins', getHandler((req) => req.gpio.getUsablePins()));
+  router.get('/stream', (req, res, next) => req.gpio.sse_handler.handleRequest(req, res, next));
 
-module.exports = router;
+  return router;
+};
+
+module.exports = { initialize };
 //===========================================================================
