@@ -11,14 +11,10 @@ const apiRoutes = require('./api_routes');
 const { requestLogger } = require('../modules/logger');
 const { ErrorHandler } = require('../modules/endpoint_handler');
 
-const DEFAULT_PORT = 3000;
-
-const start = async () => {
-
-  const port = process.env.port || DEFAULT_PORT;
+const initialize = async () => {
 
   const cors_options = {
-    origin: `http://localhost:{port}`,
+    origin: `http://localhost:3000`,
     credentials: true,
   };
 
@@ -39,10 +35,12 @@ const start = async () => {
   app.use(static_route);
   app.use(ErrorHandler);
 
-  app.listen(port, () => logger.info(`Server is listening on port ${port}`));
+  const start = (port) => {
+    app.listen(port, () => logger.info(`Server is listening on port ${port}`));
+  };
 
-  return app;
+  return { start };
 };
 
-module.exports = { start };
+module.exports = { initialize };
 //===========================================================================
