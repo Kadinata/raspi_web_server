@@ -4,7 +4,7 @@
   "description": "Backend for an app hosted on a Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --collect-coverage"
   },
   "author": "Kvad",
   "license": "ISC",
