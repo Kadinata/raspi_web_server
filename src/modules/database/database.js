@@ -7,38 +7,44 @@ const path = require('path');
 const logger = require('../logger').getLogger('DB');
 
 const _ERR_MSG_DB_NOT_INITIALIZED = 'Database instance not initialized';
+const _ERR_MSG_DB_ALREADY_INITIALIZED = 'The database instance has already been initialized';
+const _IM_MEMORY_DB = ':memory:';
 
 class Database {
 
   /**
    * Object constructor
-   * @param {String} path_to_db_file - Path to the database file
    */
-  constructor(path_to_db_file) {
+  constructor() {
     this.instance = null;
-    this.path_to_db_file = path_to_db_file;
+    this.path_to_db_file = '';
   }
 
   /**
    * (async) Initializes the database instance. This would create a new SQLite DB instance.
+   * @param {String} path_to_db_file - Path to the database file
    * @returns {Promise} - A void promise on success, otherwise an error.
    */
-  init() {
+  init(path_to_db_file) {
     return new Promise((resolve, reject) => {
-      if (this.instance !== null) return resolve();
+      if (this.instance !== null) return reject(new Error(_ERR_MSG_DB_ALREADY_INITIALIZED));
 
-      fs.mkdir(path.dirname(this.path_to_db_file), { recursive: true }, (err) => {
-        if (err) {
-          return reject(err);
-        }
-      });
+      if (path_to_db_file != _IM_MEMORY_DB) {
+        fs.mkdir(path.dirname(path_to_db_file), { recursive: true }, (err) => {
+          if (err) {
+            return reject(err);
+          }
+        });
+      }
 
-      this.instance = new sqlite3.Database(this.path_to_db_file, (err) => {
+      this.instance = new sqlite3.Database(path_to_db_file, (err) => {
         if (err) {
           logger.error(`Database instance creation error: ${err.message}`);
           return reject(err);
         }
       });
+
+      this.path_to_db_file = path_to_db_file;
 
       logger.info('Database instance created');
       return resolve();

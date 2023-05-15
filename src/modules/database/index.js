@@ -4,7 +4,7 @@ const logger = require('../logger').getLogger('DB');
 
 const initialize = async (path_to_db_file) => {
 
-  const handle = new Database(path_to_db_file);
+  const handle = new Database();
   const user_model = new UserModel(handle);
 
   const close = () => {
@@ -13,7 +13,7 @@ const initialize = async (path_to_db_file) => {
   };
 
   try {
-    await handle.init();
+    await handle.init(path_to_db_file);
     await user_model.init();
   } catch (err) {
     throw err;
