@@ -3,7 +3,7 @@
 //===========================================================================
 const Database = require('../../../src/modules/database/database');
 
-describe('Database Module Tests', () => {
+describe('Database Object Tests', () => {
 
   const SQL_CREATE_TABLE_COMMAND = (
     "CREATE TABLE IF NOT EXISTS data (\
