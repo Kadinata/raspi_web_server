@@ -6,9 +6,9 @@ const exec_promise = require('../utils/exec_promise');
 
 const get_network_interfaces = () => {
   const { lo, ...interfaces } = os.networkInterfaces();
-  return Object.keys(interfaces).map(interface => {
-    const [ipaddr] = interfaces[interface].map(item => item.address);
-    return { interface, ipaddr };
+  return Object.keys(interfaces).map(iface => {
+    const [ipaddr] = interfaces[iface].map(item => item.address);
+    return { iface, ipaddr };
   });
 }
 
@@ -28,12 +28,12 @@ const get_tx_stats = (response) => {
   return { ...packets, ...bytes, ...error, ...dropped };
 };
 
-const get_interface_stats = async ({ interface, ipaddr }) => {
-  const command = `ifconfig ${interface}`;
+const get_interface_stats = async ({ iface, ipaddr }) => {
+  const command = `ifconfig ${iface}`;
   const response = await exec_promise(command);
   const rx = get_rx_stats(response);
   const tx = get_tx_stats(response);
-  return { interface, ipaddr, rx, tx };
+  return { interface: iface, ipaddr, rx, tx };
 };
 
 module.exports = async () => {
