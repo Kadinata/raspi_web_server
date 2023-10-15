@@ -28,7 +28,7 @@ const initialize = (sysinfo, data_handler_cb) => {
     resource_sampler.stop();
   };
 
-  if (!!data_handler_cb) {
+  if (typeof data_handler_cb === 'function') {
     sysinfo.cpu_usage.onData((cpu_usage) => data_handler_cb({ cpu_usage }));
     systime_sampler.onData((data) => data_handler_cb(data));
     resource_sampler.onData((data) => data_handler_cb(data));
