@@ -17,6 +17,7 @@ class SSEHandler extends EventEmitter {
     /** @private Object to keep track of active listeners */
     this.clients = {};
     this.name = name;
+    logger.info(`[${this.name}] SSEHandler created`);
   }
 
   /**

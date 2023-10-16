@@ -23,6 +23,7 @@ class DataSampler extends EventEmitter {
     }
     this.name = name;
     this.interval = null;
+    logger.info(`[${this.name}] DataSampler created`)
   }
 
   /**
