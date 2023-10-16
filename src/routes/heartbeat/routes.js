@@ -14,7 +14,12 @@ const validateHeartbeatRequest = validateHandler((req) => {
 const initialize = () => {
   const router = express.Router();
   router.use(protectedRoute, validateHeartbeatRequest);
-  router.get('/', (req, res, next) => req.heartbeat.handleRequest(req, res, next));
+  router.get('/', (req, res, next) => {
+    const status = 'connected';
+    const message = `event: message\ndata: ${JSON.stringify({status})}\n\n`;
+    req.heartbeat.handleRequest(req, res, next);
+    res.write(message);
+  });
 
   return router;
 };
