@@ -15,13 +15,20 @@ const initialize = async () => {
 
   logger.info('Initializing app modules...');
 
+  const auth = await authProvider.initialize(JWT_SECRET_FILE, DB_FILE);
   const sysinfo = sysinfoProvider.initialize();
   const gpio = gpioProvider.initialize();
   const heartbeat = heartbeatProvider.initialize();
-  const auth = await authProvider.initialize(JWT_SECRET_FILE, DB_FILE);
+
+  const providers = () => ([
+    auth,
+    sysinfo,
+    gpio,
+    heartbeat,
+  ]);
 
   logger.info('Modules initialization complete');
-  return { auth, sysinfo, gpio, heartbeat };
+  return providers;
 };
 
 module.exports = { initialize };

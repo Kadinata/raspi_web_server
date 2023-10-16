@@ -18,12 +18,12 @@ const initialize = () => {
     }
   });
 
-  const provider = () => (req, res, next) => {
+  const provider = (req, res, next) => {
     req.sysinfo = sysinfo;
     next();
   };
 
-  return { provider };
+  return provider;
 };
 
 module.exports = { initialize };

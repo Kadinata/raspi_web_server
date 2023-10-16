@@ -12,12 +12,12 @@ const initialize = () => {
 
   exitHandler.register(() => gpio.destroy());
 
-  const provider = () => (req, res, next) => {
+  const provider = (req, res, next) => {
     req.gpio = gpio;
     next();
   };
 
-  return { provider };
+  return provider;
 };
 
 module.exports = { initialize };

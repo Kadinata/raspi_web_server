@@ -28,10 +28,7 @@ const initialize = async () => {
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(modules.auth.provider());
-  app.use(modules.sysinfo.provider());
-  app.use(modules.gpio.provider());
-  app.use(modules.heartbeat.provider());
+  app.use(modules());
   app.use(requestLogger);
   app.use(apiRoutes.initialize('/api/v1'));
   app.use(static_route);
