@@ -13,7 +13,7 @@ class Gpio extends RateLimitedEmitter {
     super(rate_limit)
     this._gpio_bank = new GpioBank();
     this._gpio_bank.getUsablePins().forEach((pin_num) => {
-      this._gpio_bank.watch(pin_num, (err, value) => this._emit_pin_state(pin_num, err));
+      this._gpio_bank.watch(pin_num, (value, err) => this._emit_pin_state(pin_num, err));
     });
     logger.info('GPIO instance created');
   };
@@ -66,5 +66,4 @@ class Gpio extends RateLimitedEmitter {
 }
 
 module.exports = Gpio;
-
 //===========================================================================
