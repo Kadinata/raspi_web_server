@@ -2,6 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
+const crypto = require('crypto');
 const logger = require('../logger').getLogger('SSE_HANDLER');
 
 /** 
@@ -10,11 +11,12 @@ const logger = require('../logger').getLogger('SSE_HANDLER');
 class SSEHandler extends EventEmitter {
 
   /** Object constructor */
-  constructor() {
+  constructor(name) {
     super();
 
     /** @private Object to keep track of active listeners */
     this.clients = {};
+    this.name = name;
   }
 
   /**
@@ -42,11 +44,11 @@ class SSEHandler extends EventEmitter {
    * @param {object} res - HTTP response objcet for the client
    */
   addClient(req, res) {
-    const client_id = Date.now();
+    const client_id = crypto.randomUUID();
     this.clients[`${client_id}`] = res;
-    req.on('close', () => this.removeClient(client_id));
+    res.on('close', () => this.removeClient(client_id));
     this._emit_client_change();
-    logger.info(`SSE client added; client_id: ${client_id}; client count: ${this.getClientCount()}`);
+    logger.info(`[${this.name}] SSE client added; client_id: ${client_id}; client count: ${this.getClientCount()}`);
     return client_id;
   }
 
@@ -64,7 +66,7 @@ class SSEHandler extends EventEmitter {
     removed.end();
     this.clients = clients;
     this._emit_client_change();
-    logger.info(`SSE client removed; client_id: ${client_id}; client count: ${this.getClientCount()}`);
+    logger.info(`[${this.name}] SSE client removed; client_id: ${client_id}; client count: ${this.getClientCount()}`);
   }
 
   /**
@@ -89,7 +91,7 @@ class SSEHandler extends EventEmitter {
    * @param {object} data - Data to push to the clients
    */
   send(data) {
-    const payload = `data: ${JSON.stringify(data)}\n\n`;
+    const payload = `event: message\ndata: ${JSON.stringify(data)}\n\n`;
     Object.values(this.clients).forEach(res => res.write(payload));
   }
 
@@ -100,6 +102,6 @@ class SSEHandler extends EventEmitter {
 }
 
 module.exports = {
-  Handler: () => new SSEHandler(),
+  Handler: (name) => new SSEHandler(name),
 };
 //===========================================================================

@@ -29,9 +29,9 @@ const initialize = async () => {
 
   const db = await database.initialize(DB_FILE);
   const auth = authModule.initialize(db.user_model, jwt_secret);
-  const gpio_sse = sse.Handler();
+  const gpio_sse = sse.Handler('GPIO Stream');
   const gpio = GpioModule.initialize((gpio_state) => gpio_sse.send(gpio_state));
-  const sysinfo_sse = sse.Handler();
+  const sysinfo_sse = sse.Handler('SysInfo Stream');
   const sysinfo = sysinfoModule.initialize((data) => sysinfo_sse.send(data));
   sysinfo.sse_handler = sysinfo_sse;
   gpio.sse_handler = gpio_sse;
