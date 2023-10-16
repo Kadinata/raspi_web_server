@@ -5,8 +5,8 @@ const DataSampler = require('../event_manager/data_sampler');
 
 const initialize = (sysinfo, data_handler_cb) => {
 
-  const systime_sampler = new DataSampler(() => sysinfo.systime.getAll());
-  const resource_sampler = new DataSampler(async () => {
+  const systime_sampler = new DataSampler('SysTime', () => sysinfo.systime.getAll());
+  const resource_sampler = new DataSampler('SysInfo', async () => {
     try {
       const hdd_info = await sysinfo.hdd();
       const cpu_info = await sysinfo.cpu();

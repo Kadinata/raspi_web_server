@@ -162,8 +162,8 @@ describe('System Information Data Stream Tests', () => {
     const mStream = stream.initialize(SYSINFO_MOCK, () => null);
 
     /** Verify the args passed to the DataSampler constructor are functions */
-    const systime_sampler_arg = DataSampler.mock.calls[0][0];
-    const sysinfo_sampler_arg = DataSampler.mock.calls[1][0];
+    const systime_sampler_arg = DataSampler.mock.calls[0][1];
+    const sysinfo_sampler_arg = DataSampler.mock.calls[1][1];
     expect(typeof systime_sampler_arg).toEqual('function');
     expect(typeof sysinfo_sampler_arg).toEqual('function');
 

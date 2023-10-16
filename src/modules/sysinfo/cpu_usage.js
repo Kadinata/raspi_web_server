@@ -33,7 +33,7 @@ const get_cpu_time = () => {
 class CpuUsage extends DataSampler {
 
   constructor() {
-    super(() => this.measure());
+    super('CPU Usage', () => this.measure());
     this.prev_usages = get_cpu_time();
     const interval = this.prev_usages.timestamp;
     this.snapshot = { interval, ...this.prev_usages };

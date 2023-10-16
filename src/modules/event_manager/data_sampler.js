@@ -14,13 +14,14 @@ class DataSampler extends EventEmitter {
    * Object constructor
    * @param {any} dataSource - A function that returns the data or an object
    */
-  constructor(dataSource) {
+  constructor(name, dataSource) {
     super();
     if (typeof dataSource === 'function') {
       this.dataSource = dataSource;
     } else {
       this.dataSource = () => dataSource;
     }
+    this.name = name;
     this.interval = null;
   }
 
@@ -30,14 +31,14 @@ class DataSampler extends EventEmitter {
    */
   start(period) {
     if (this.isRunning()) return;
-    logger.info(`Data sampler started @${period} ms`);
+    logger.info(`[${this.name}] Data sampler started @${period} ms`);
     this.interval = setInterval(() => this._sample_data(), period);
   }
 
   /** Stops the data sampler */
   stop() {
     if (!this.isRunning()) return;
-    logger.info('Data sampler stopped');
+    logger.info(`[${this.name}] Data sampler stopped`);
     clearInterval(this.interval);
     this.interval = null;
     this.emit('end');
@@ -66,7 +67,7 @@ class DataSampler extends EventEmitter {
         const data = await this.dataSource();
         this.emit('data', data);
       } catch (err) {
-        logger.error(`An error occurred while sampling data. ${err}`);
+        logger.error(`[${this.name}] An error occurred while sampling data. ${err}`);
         this.emit('error', err);
       }
     })();
