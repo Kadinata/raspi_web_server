@@ -2,7 +2,6 @@
 //  
 //===========================================================================
 const bcrypt = require('bcrypt');
-const passport = require('passport');
 const passport_config = require('./auth_passport_config');
 const jwt_signer = require('../jwt/jwt_signer');
 
@@ -14,11 +13,7 @@ class Auth {
     this._salt_rounds = salt_rounds;
     this._user_model = user_model;
     this.generateToken = jwt_signer(jwt_secret);
-    passport_config.configure(this, jwt_secret, passport);
-  }
-
-  get passport() {
-    return passport;
+    passport_config.configure(this, jwt_secret);
   }
 
   async registerUser(username, password) {

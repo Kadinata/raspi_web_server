@@ -1,6 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
+const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const AuthMode = require('./auth_mode');
@@ -52,7 +53,7 @@ const handleJWTAuth = async (jwt_payload, done) => {
   }
 };
 
-const create = (auth, jwt_secret) => (passport) => {
+const configure = (auth, jwt_secret) => {
 
   const local_strategy_options = {
     usernameField: 'username',
@@ -85,10 +86,5 @@ const create = (auth, jwt_secret) => (passport) => {
   passport.use(AuthMode.JWT, jwt_auth_strategy);
 };
 
-const configure = (auth, jwt_secret, passport) => {
-  const configurePassport = create(auth, jwt_secret);
-  configurePassport(passport);
-};
-
-module.exports = { create, configure };
+module.exports = { configure };
 //===========================================================================
