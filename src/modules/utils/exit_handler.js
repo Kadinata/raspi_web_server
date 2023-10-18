@@ -7,6 +7,9 @@ const logger = require('../logger').getLogger('EXIT_HANDLER');
 const _callbacks = [];
 
 const register = (callback) => {
+  if (typeof callback !== 'function') {
+    throw new Error('Exit handler callback must be a function');
+  }
   _callbacks.push(callback);
   logger.info(`Exit handler callback registered. Total count: ${_callbacks.length}`);
 };
