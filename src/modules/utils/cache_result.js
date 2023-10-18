@@ -1,24 +1,27 @@
 //===========================================================================
 //  
 //===========================================================================
-
 const cacheResult = (fn) => {
-  let cahced_result = null;
+  const cahced_result = {};
   return (...args) => {
-    if (cahced_result === null) {
-      cahced_result = fn(...args);
+    const _args = JSON.stringify(args);
+
+    if (cahced_result[_args] === undefined) {
+      cahced_result[_args] = fn(...args);
     }
-    return cahced_result;
+    return cahced_result[_args];
   };
 }
 
 const cacheResultAsync = (fn) => {
-  let cahced_result = null;
+  let cahced_result = {};
   return async (...args) => {
-    if (cahced_result === null) {
-      cahced_result = await fn(...args);
+    const _args = JSON.stringify(args);
+
+    if (cahced_result[_args] === undefined) {
+      cahced_result[_args] = await fn(...args);
     }
-    return cahced_result;
+    return cahced_result[_args];
   };
 }
 
