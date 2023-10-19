@@ -4,10 +4,11 @@
 const passport = require('passport');
 const logger = require('../../modules/logger').getLogger('AUTH');
 const Errors = require('../../modules/status_codes/error_codes');
+const AuthMode = require('../../modules/auth/auth_mode');
 
 const login = (req, res, next) => {
   const session = false;
-  passport.authenticate('login', { session }, (err, user, info) => {
+  passport.authenticate(AuthMode.LOGIN, { session }, (err, user, info) => {
 
     if (err !== null) {
       logger.error(`Login Error: ${err}`);
@@ -43,7 +44,7 @@ const login = (req, res, next) => {
 const register = (req, res, next) => {
   const session = false;
 
-  passport.authenticate('register', { session }, (err, user, info) => {
+  passport.authenticate(AuthMode.REGISTER, { session }, (err, user, info) => {
     if (err !== null) {
       logger.error(`User registration error: ${err}`);
       const message = 'An internal error occurred';

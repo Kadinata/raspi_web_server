@@ -14,8 +14,6 @@ const MOCK_JWT_SECRET_FILE = '/path/to/jwt/secret';
 const MOCK_DB_FILE = '/path/to/db/file';
 
 const MOCK_USER_MODEL = new User(null);
-
-const mockPassportProvider = jest.fn((req, res, next) => next());
 const mockDBClose = jest.fn();
 
 jest.mock('../../src/modules/jwt/jwt_secret_manager', () => ({
@@ -29,10 +27,6 @@ jest.mock('../../src/modules/database', () => ({
       close: mockDBClose,
     };
   }),
-}));
-
-jest.mock('passport', () => ({
-  initialize: jest.fn(() => (req, res, next) => mockPassportProvider(req, res, next)),
 }));
 
 jest.mock('../../src/modules/auth/auth_passport_config', () => ({
@@ -55,16 +49,18 @@ beforeEach(() => {
 
 describe('Auth Middleware Tests', () => {
   it('should initializes the middleware correctly', async () => {
+    const mock_passport_initialize = jest.spyOn(passport, 'initialize');
+
     expect(jwtsm.load_or_create).toHaveBeenCalledTimes(0);
     expect(database.initialize).toHaveBeenCalledTimes(0);
     expect(mockDBClose).toHaveBeenCalledTimes(0);
-    expect(passport.initialize).toHaveBeenCalledTimes(0);
+    expect(mock_passport_initialize).toHaveBeenCalledTimes(0);
     expect(exit_handler.register).toHaveBeenCalledTimes(0);
 
     const provider = await auth_middleware.initialize(MOCK_JWT_SECRET_FILE, MOCK_DB_FILE);
     expect(jwtsm.load_or_create).toHaveBeenCalledTimes(1);
     expect(database.initialize).toHaveBeenCalledTimes(1);
-    expect(passport.initialize).toHaveBeenCalledTimes(1);
+    expect(mock_passport_initialize).toHaveBeenCalledTimes(1);
     expect(exit_handler.register).toHaveBeenCalledTimes(1);
     expect(mockDBClose).toHaveBeenCalledTimes(0);
     expect(typeof provider).toEqual('function');
@@ -74,6 +70,7 @@ describe('Auth Middleware Tests', () => {
   });
 
   it('should attach an auth instance to the req object', async () => {
+    const mock_passport_initialize = jest.spyOn(passport, 'initialize');
     const req = {};
     const res = {};
     const next = jest.fn();
@@ -84,14 +81,17 @@ describe('Auth Middleware Tests', () => {
     const provider = await auth_middleware.initialize(MOCK_JWT_SECRET_FILE, MOCK_DB_FILE);
     expect(jwtsm.load_or_create).toHaveBeenCalledTimes(1);
     expect(database.initialize).toHaveBeenCalledTimes(1);
+    expect(mock_passport_initialize).toHaveBeenCalledTimes(1);
 
     expect(next).toHaveBeenCalledTimes(0);
-    expect(mockPassportProvider).toHaveBeenCalledTimes(0);
+    expect(req.login).toBeUndefined();
+    expect(req.logIn).toBeUndefined();
     expect(req.auth).toBeUndefined();
 
     provider(req, res, next);
     expect(next).toHaveBeenCalledTimes(1);
-    expect(mockPassportProvider).toHaveBeenCalledTimes(1);
+    expect(typeof req.login).toEqual('function');
+    expect(typeof req.logIn).toEqual('function');
     expect(req.auth instanceof Auth).toEqual(true);
   });
 });
