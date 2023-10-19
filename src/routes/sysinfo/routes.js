@@ -16,6 +16,9 @@ const initialize = () => {
   const router = express.Router();
 
   const getNetsatInfo = getHandler((req) => req.sysinfo.network());
+  const getOSInfo = getHandler((req) => req.sysinfo.os());
+  const getCPUInfo = getHandler((req) => req.sysinfo.cpu());
+  const getMemoryInfo = getHandler((req) => req.sysinfo.memory());
   const getStorageInfo = getHandler((req) => req.sysinfo.hdd());
   const getSystimeInfo = getHandler((req) => req.sysinfo.systime.getAll());
   const getUptimeInfo = getHandler((req) => req.sysinfo.systime.getUptime());
@@ -27,9 +30,9 @@ const initialize = () => {
 
   router.use(protectedRoute, validateSysinfo);
   router.get('/', getAllSystemInfo);
-  router.get('/os', getHandler((req) => req.sysinfo.os()));
-  router.get('/cpu', getHandler((req) => req.sysinfo.cpu()));
-  router.get('/memory', getHandler((req) => req.sysinfo.memory()));
+  router.get('/os', getOSInfo);
+  router.get('/cpu', getCPUInfo);
+  router.get('/memory', getMemoryInfo);
   router.get('/netstat', getNetsatInfo);
   router.get('/storage', getStorageInfo);
   router.get('/time', getSystimeInfo);
