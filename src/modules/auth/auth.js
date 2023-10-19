@@ -63,7 +63,7 @@ class Auth {
 
     const hashed_password = await bcrypt.hash(new_password, this._salt_rounds);
     try {
-      this._user_model.updatePassword(user_id, hashed_password);
+      await this._user_model.updatePassword(user_id, hashed_password);
     } catch (err) {
       const message = 'Password update failed';
       return { ...result, error: { message } };
