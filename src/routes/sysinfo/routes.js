@@ -3,7 +3,7 @@
 //===========================================================================
 const express = require('express');
 const { getHandler, validateHandler } = require('../../modules/endpoint_handler');
-const protectedRoute = require('../../modules/auth/protected_route');
+const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateSysinfo = validateHandler((req) => {
   if (!!req.sysinfo && !!req.sysinfo.sse_handler) return;

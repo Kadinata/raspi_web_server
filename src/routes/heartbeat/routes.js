@@ -3,7 +3,7 @@
 //===========================================================================
 const express = require('express');
 const { validateHandler } = require('../../modules/endpoint_handler');
-const protectedRoute = require('../../modules/auth/protected_route');
+const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateHeartbeatRequest = validateHandler((req) => {
   if (!!req.heartbeat) return;

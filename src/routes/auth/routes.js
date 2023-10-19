@@ -3,7 +3,7 @@
 //===========================================================================
 const express = require('express');
 const handlers = require('./handler');
-const protectedRoute = require('../../modules/auth/protected_route');
+const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const initialize = () => {
 

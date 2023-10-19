@@ -3,7 +3,7 @@
 //===========================================================================
 const express = require('express');
 const { getHandler, postHandler, validateHandler } = require('../../modules/endpoint_handler');
-const protectedRoute = require('../../modules/auth/protected_route');
+const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateGpio = validateHandler((req) => {
   if (!!req.gpio && !!req.gpio.sse_handler) return;

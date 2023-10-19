@@ -12,13 +12,13 @@ const initialize = async (JWT_SECRET_FILE, DB_FILE) => {
   const jwt_secret = await jwtsm.load_or_create(JWT_SECRET_FILE);
   const db = await database.initialize(DB_FILE);
   const auth = authModule.initialize(db.user_model, jwt_secret);
-  const passportProvider = passport.initialize();
+  const passportHandler = passport.initialize();
 
   exitHandler.register(() => db.close());
 
   const provider = (req, res, next) => {
     req.auth = auth;
-    passportProvider(req, res, next);
+    passportHandler(req, res, next);
   };
 
   return provider;
