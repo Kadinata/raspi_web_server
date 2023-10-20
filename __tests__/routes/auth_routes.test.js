@@ -5,15 +5,12 @@ const express = require('express');
 const request = require('supertest');
 const passport = require('passport');
 const router = require('../../src/routes/auth');
-const { ErrorHandler } = require('../../src/modules/endpoint_handler');
+const STATUS_CODE = require('../__utils__/status_codes');
+const DependencyInjector = require('../__utils__/dependency_injector');
+const { ErrorHandler } = require('../__utils__/error_handler');
 const AuthMode = require('../../src/modules/auth/auth_mode');
 
 const CONTENT_TYPE_APPLICATION_JSON = 'application/json; charset=utf-8';
-
-const STATUS_CODE_OK = 200;
-const STATUS_CODE_FORBIDDEN = 403;
-const STATUS_CODE_UNAUTHORIZED = 401;
-const STATUS_CODE_INTERNAL_SERVER_ERROR = 500;
 
 const ERROR_MSG_AUTH_FAILURE = 'authentication failure';
 const ERROR_MSG_INTERNAL_ERROR = 'An internal error occurred';
@@ -61,28 +58,6 @@ const PASSPORT_AUTH_WRONG_USER_IMPL = (mode, opts, callback) => {
   return (req, res, next) => next();
 };
 
-const create_dependency_injector = () => {
-  let failure_mode = 0;
-  return ({
-    middleware: jest.fn((req, res, next) => {
-      if (failure_mode === 0) {
-        req.auth = MOCK_AUTH;
-        req.login = MOCK_LOGIN_FN;
-      }
-      if (req.body.user) {
-        req.user = req.body.user;
-      }
-      next();
-    }),
-    setFailureMode: (mode) => {
-      failure_mode = mode;
-    },
-    reset: () => {
-      failure_mode = 0;
-    },
-  });
-};
-
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
 
 jest.mock(
@@ -90,11 +65,18 @@ jest.mock(
   () => (req, res, next) => mock_protected_route_handler(req, res, next)
 );
 
-
 describe('Authentication Express Routes Tests', () => {
   const app = express();
-  const dependency_injector = create_dependency_injector();
   const session = false;
+  const dependency_injector = DependencyInjector.create((failure_mode, req) => {
+    if (failure_mode === DependencyInjector.NO_FAILURE) {
+      req.auth = MOCK_AUTH;
+      req.login = MOCK_LOGIN_FN;
+    }
+    if (req.body.user) {
+      req.user = req.body.user;
+    }
+  });
 
   beforeAll(() => {
     app.use(express.json());
@@ -136,7 +118,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_OK);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -168,7 +150,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_FORBIDDEN);
+    expect(res.statusCode).toEqual(STATUS_CODE.FORBIDDEN);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -200,7 +182,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_INTERNAL_SERVER_ERROR);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -234,7 +216,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_OK);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeDefined();
   });
@@ -268,7 +250,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_UNAUTHORIZED);
+    expect(res.statusCode).toEqual(STATUS_CODE.UNAUTHORIZED);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -302,7 +284,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_INTERNAL_SERVER_ERROR);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -336,7 +318,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_passport_authenticate.mock.calls[0][1]).toEqual({ session });
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_UNAUTHORIZED);
+    expect(res.statusCode).toEqual(STATUS_CODE.UNAUTHORIZED);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -360,7 +342,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_OK);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -381,7 +363,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_OK);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -421,7 +403,7 @@ describe('Authentication Express Routes Tests', () => {
     );
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_OK);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -455,7 +437,7 @@ describe('Authentication Express Routes Tests', () => {
     expect(MOCK_AUTH.updateUserPassword).toHaveBeenCalledTimes(0);
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_FORBIDDEN);
+    expect(res.statusCode).toEqual(STATUS_CODE.FORBIDDEN);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });
@@ -495,7 +477,7 @@ describe('Authentication Express Routes Tests', () => {
     );
 
     expect(res.header['content-type']).toEqual(CONTENT_TYPE_APPLICATION_JSON);
-    expect(res.statusCode).toEqual(STATUS_CODE_INTERNAL_SERVER_ERROR);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_response_body));
     expect(res['header']['set-cookie']).toBeUndefined();
   });

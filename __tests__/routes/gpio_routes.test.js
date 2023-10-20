@@ -4,11 +4,12 @@
 const express = require('express');
 const request = require('supertest');
 const router = require('../../src/routes/gpio');
-const SSE = require('../../src/modules/event_manager/sse_handler');
-const { ErrorHandler } = require('../../src/modules/endpoint_handler');
+const SSEHandler = require('../__utils__/sse_handler');
+const DependencyInjector = require('../__utils__/dependency_injector');
+const STATUS_CODE = require('../__utils__/status_codes');
+const { ErrorHandler } = require('../__utils__/error_handler');
 
 const EXPECTED_CONTENT_TYPE = 'application/json; charset=utf-8';
-const EXPECTED_STATUS_CODE = 200;
 
 const GPIO_GET_PIN_STATES_DATA = { data: 'gpio.getPinStates()' };
 const GPIO_GET_USABLE_PINS_DATA = { data: 'gpio.getUsablePins()' };
@@ -17,25 +18,7 @@ const MOCK_GPIO = {
   getPinStates: jest.fn(() => GPIO_GET_PIN_STATES_DATA),
   setPinStates: jest.fn((payload) => null),
   getUsablePins: jest.fn(() => GPIO_GET_USABLE_PINS_DATA),
-  sse_handler: SSE.Handler('GPIO Routes Test'),
-};
-
-const create_dependency_injector = () => {
-  let failure_mode = 0;
-  return ({
-    middleware: jest.fn((req, res, next) => {
-      if (failure_mode === 0) {
-        req.gpio = MOCK_GPIO;
-      }
-      next();
-    }),
-    setFailureMode: (mode) => {
-      failure_mode = mode;
-    },
-    reset: () => {
-      failure_mode = 0;
-    },
-  });
+  sse_handler: SSEHandler('GPIO Routes Test'),
 };
 
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
@@ -47,7 +30,11 @@ jest.mock(
 
 describe('GPIO Express Routes Tests', () => {
   const app = express();
-  const dependency_injector = create_dependency_injector();
+  const dependency_injector = DependencyInjector.create((failure_mode, req) => {
+    if (failure_mode === DependencyInjector.NO_FAILURE) {
+      req.gpio = MOCK_GPIO;
+    }
+  });
 
   beforeAll(() => {
     app.use(express.json());
@@ -73,7 +60,7 @@ describe('GPIO Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(GPIO_GET_PIN_STATES_DATA));
   });
 
@@ -96,7 +83,7 @@ describe('GPIO Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(expected_content_type);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(expected_response_text);
     expect(MOCK_GPIO.setPinStates).toHaveBeenCalledWith({ payload });
   });
@@ -112,7 +99,7 @@ describe('GPIO Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(GPIO_GET_USABLE_PINS_DATA));
   });
 
@@ -128,25 +115,22 @@ describe('GPIO Express Routes Tests', () => {
     });
     s_app.use(ErrorHandler);
 
-    const mock_gpio_sse_handle_request = jest.spyOn(MOCK_GPIO.sse_handler, 'handleRequest');
-
-    expect(mock_gpio_sse_handle_request).toHaveBeenCalledTimes(0);
+    expect(MOCK_GPIO.sse_handler.handleRequest).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(s_app).get('/stream');
-    expect(mock_gpio_sse_handle_request).toHaveBeenCalledTimes(1);
+    expect(MOCK_GPIO.sse_handler.handleRequest).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual('text/event-stream');
     expect(res.header['connection']).toEqual('keep-alive');
     expect(res.header['cache-control']).toEqual('no-cache');
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
   });
 
   it('returns an error if GPIO is not initialized correctly', async () => {
-    const expected_internal_error_status_code = 500;
     const expected_internal_error_response = {
       status: 'error',
       message: 'An internal server error occurred.'
@@ -162,7 +146,7 @@ describe('GPIO Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(expected_internal_error_status_code);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_internal_error_response));
   });
 });

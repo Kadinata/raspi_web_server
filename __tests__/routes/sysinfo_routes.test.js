@@ -4,11 +4,12 @@
 const express = require('express');
 const request = require('supertest');
 const router = require('../../src/routes/sysinfo');
-const SSE = require('../../src/modules/event_manager/sse_handler');
-const { ErrorHandler } = require('../../src/modules/endpoint_handler');
+const SSEHandler = require('../__utils__/sse_handler');
+const DependencyInjector = require('../__utils__/dependency_injector');
+const STATUS_CODE = require('../__utils__/status_codes');
+const { ErrorHandler } = require('../__utils__/error_handler');
 
 const EXPECTED_CONTENT_TYPE = 'application/json; charset=utf-8';
-const EXPECTED_STATUS_CODE = 200;
 
 const SYSINFO_FETCH_ALL_DATA = { data: 'sysinfo.fetchAll()' };
 const SYSINFO_OS_DATA = { data: 'sysinfo.os()' };
@@ -38,25 +39,7 @@ const MOCK_SYSINFO = {
     getStartTime: jest.fn(() => SYSINFO_SYSTIME_START_TIME_DATA),
     getLocaltime: jest.fn(() => SYSINFO_SYSTIME_LOCAL_TIME_DATA),
   },
-  sse_handler: SSE.Handler('SysInfo Routes Test'),
-};
-
-const create_dependency_injector = () => {
-  let failure_mode = 0;
-  return ({
-    middleware: jest.fn((req, res, next) => {
-      if (failure_mode === 0) {
-        req.sysinfo = MOCK_SYSINFO;
-      }
-      next();
-    }),
-    setFailureMode: (mode) => {
-      failure_mode = mode;
-    },
-    reset: () => {
-      failure_mode = 0;
-    },
-  });
+  sse_handler: SSEHandler('SysInfo Routes Test'),
 };
 
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
@@ -69,7 +52,11 @@ jest.mock(
 describe('Sysinfo Express Routes Tests', () => {
 
   const app = express();
-  const dependency_injector = create_dependency_injector();
+  const dependency_injector = DependencyInjector.create((failure_mode, req) => {
+    if (failure_mode === DependencyInjector.NO_FAILURE) {
+      req.sysinfo = MOCK_SYSINFO;
+    }
+  });
 
   beforeAll(() => {
     app.use(dependency_injector.middleware);
@@ -93,7 +80,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_FETCH_ALL_DATA));
   });
 
@@ -108,7 +95,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_OS_DATA));
   });
 
@@ -123,7 +110,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_CPU_DATA));
   });
 
@@ -138,7 +125,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_MEMORY_DATA));
   });
 
@@ -153,7 +140,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_NETWORK_DATA));
   });
 
@@ -168,7 +155,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_HDD_DATA));
   });
 
@@ -183,7 +170,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_SYSTIME_DATA));
   });
 
@@ -198,7 +185,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_SYSTIME_UPTIME_DATA));
   });
 
@@ -213,7 +200,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_SYSTIME_START_TIME_DATA));
   });
 
@@ -228,7 +215,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_SYSTIME_LOCAL_TIME_DATA));
   });
 
@@ -243,7 +230,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(JSON.stringify(SYSINFO_CPU_USAGE_DATA));
   });
 
@@ -256,26 +243,23 @@ describe('Sysinfo Express Routes Tests', () => {
       res.end();
     });
     s_app.use(ErrorHandler);
-    
-    const mock_sysinfo_sse_handle_request = jest.spyOn(MOCK_SYSINFO.sse_handler, 'handleRequest');
 
-    expect(mock_sysinfo_sse_handle_request).toHaveBeenCalledTimes(0);
+    expect(MOCK_SYSINFO.sse_handler.handleRequest).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(s_app).get('/stream');
-    expect(mock_sysinfo_sse_handle_request).toHaveBeenCalledTimes(1);
+    expect(MOCK_SYSINFO.sse_handler.handleRequest).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual('text/event-stream');
     expect(res.header['connection']).toEqual('keep-alive');
     expect(res.header['cache-control']).toEqual('no-cache');
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
   });
 
   it('returns an error if sysinfo or its SSE handler is not initialized correctly', async () => {
-    const expected_internal_error_status_code = 500;
     const expected_internal_error_response = {
       status: 'error',
       message: 'An internal server error occurred.'
@@ -291,7 +275,7 @@ describe('Sysinfo Express Routes Tests', () => {
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(expected_internal_error_status_code);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_internal_error_response));
   });
 });

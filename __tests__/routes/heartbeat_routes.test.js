@@ -4,32 +4,15 @@
 const express = require('express');
 const request = require('supertest');
 const router = require('../../src/routes/heartbeat');
-const SSE = require('../../src/modules/event_manager/sse_handler');
-const { ErrorHandler } = require('../../src/modules/endpoint_handler');
+const SSEHandler = require('../__utils__/sse_handler');
+const DependencyInjector = require('../__utils__/dependency_injector');
+const STATUS_CODE = require('../__utils__/status_codes');
+const { ErrorHandler } = require('../__utils__/error_handler');
 
 const EXPECTED_CONTENT_TYPE = 'application/json; charset=utf-8';
-const EXPECTED_STATUS_CODE = 200;
 const EXPECTED_EVENT_MESSAGE = `event: message\ndata: ${JSON.stringify({ status: 'connected' })}\n\n`;
 
-const MOCK_HEARTBEAT = SSE.Handler('Heartbeat Routes Test');
-
-const create_dependency_injector = () => {
-  let failure_mode = 0;
-  return ({
-    middleware: jest.fn((req, res, next) => {
-      if (failure_mode === 0) {
-        req.heartbeat = MOCK_HEARTBEAT;
-      }
-      next();
-    }),
-    setFailureMode: (mode) => {
-      failure_mode = mode;
-    },
-    reset: () => {
-      failure_mode = 0;
-    },
-  });
-};
+const MOCK_HEARTBEAT = SSEHandler('Heartbeat Routes Test');
 
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
 
@@ -38,7 +21,11 @@ jest.mock(
   () => (req, res, next) => mock_protected_route_handler(req, res, next)
 );
 
-const dependency_injector = create_dependency_injector();
+const dependency_injector = DependencyInjector.create((failure_mode, req) => {
+  if (failure_mode === DependencyInjector.NO_FAILURE) {
+    req.heartbeat = MOCK_HEARTBEAT;
+  }
+});
 
 describe('Sysinfo Express Routes Tests', () => {
 
@@ -59,47 +46,42 @@ describe('Sysinfo Express Routes Tests', () => {
   });
 
   test('responds to / by subscribing to the heartbeat stream', async () => {
-    const mock_heartbeat_sse_handle_request = jest.spyOn(MOCK_HEARTBEAT, 'handleRequest');
-
-    expect(mock_heartbeat_sse_handle_request).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(app).get('/');
 
-    expect(mock_heartbeat_sse_handle_request).toHaveBeenCalledTimes(1);
+    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual('text/event-stream');
     expect(res.header['connection']).toEqual('keep-alive');
     expect(res.header['cache-control']).toEqual('no-cache');
-    expect(res.statusCode).toEqual(EXPECTED_STATUS_CODE);
+    expect(res.statusCode).toEqual(STATUS_CODE.OK);
     expect(res.text).toEqual(EXPECTED_EVENT_MESSAGE);
   });
 
   it('returns an error if heartbeat is not initialized correctly', async () => {
-    const expected_internal_error_status_code = 500;
     const expected_internal_error_response = {
       status: 'error',
       message: 'An internal server error occurred.'
     };
 
-    const mock_heartbeat_sse_handle_request = jest.spyOn(MOCK_HEARTBEAT, 'handleRequest');
-
-    expect(mock_heartbeat_sse_handle_request).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     dependency_injector.setFailureMode(1);
 
     const res = await request(app).get('/');
-    expect(mock_heartbeat_sse_handle_request).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
     expect(res.header['content-type']).toEqual(EXPECTED_CONTENT_TYPE);
-    expect(res.statusCode).toEqual(expected_internal_error_status_code);
+    expect(res.statusCode).toEqual(STATUS_CODE.INTERNAL_SERVER_ERROR);
     expect(res.text).toEqual(JSON.stringify(expected_internal_error_response));
   });
 });

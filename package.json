@@ -6,6 +6,11 @@
   "scripts": {
     "test": "jest --coverage --collectCoverageFrom='src/**/*.js'"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "__tests__/__utils__/*"
+    ]
+  },
   "author": "Kvad",
   "license": "ISC",
   "dependencies": {

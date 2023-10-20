@@ -2,9 +2,9 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
+const STATUS_CODE = require('../../__utils__/status_codes');
 const SSE = require('../../../src/modules/event_manager/sse_handler');
 
-const EXPECTED_RESPONSE_STATUS = 200;
 const EXPECTED_RESPONSE_HEADER = {
   'Content-Type': 'text/event-stream',
   'Connection': 'keep-alive',
@@ -48,7 +48,7 @@ describe('SSE Handler tests', () => {
     expect(handler.getClientCount()).toEqual(1);
     expect(client_1.writeHead).toHaveBeenCalledTimes(1);
     expect(client_2.writeHead).toHaveBeenCalledTimes(0);
-    expect(client_1.writeHead).toHaveBeenCalledWith(EXPECTED_RESPONSE_STATUS, EXPECTED_RESPONSE_HEADER);
+    expect(client_1.writeHead).toHaveBeenCalledWith(STATUS_CODE.OK, EXPECTED_RESPONSE_HEADER);
     expect(client_1.on).toHaveBeenCalledTimes(1);
     expect(client_2.on).toHaveBeenCalledTimes(0);
 
@@ -56,7 +56,7 @@ describe('SSE Handler tests', () => {
     expect(handler.getClientCount()).toEqual(2);
     expect(client_1.writeHead).toHaveBeenCalledTimes(1);
     expect(client_2.writeHead).toHaveBeenCalledTimes(1);
-    expect(client_2.writeHead).toHaveBeenCalledWith(EXPECTED_RESPONSE_STATUS, EXPECTED_RESPONSE_HEADER);
+    expect(client_2.writeHead).toHaveBeenCalledWith(STATUS_CODE.OK, EXPECTED_RESPONSE_HEADER);
     expect(client_1.on).toHaveBeenCalledTimes(1);
     expect(client_2.on).toHaveBeenCalledTimes(1);
 
