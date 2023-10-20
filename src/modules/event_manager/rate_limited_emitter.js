@@ -26,10 +26,10 @@ class RateLimitedEmitter extends EventEmitter {
   }
 
   /**
-   * Returns true if there is an event waiting to be emitted.
-   * @returns {boolean} - true if there is an event waiting to be emitted, false otherwise.
+   * Returns true if there is a pending event waiting to be emitted.
+   * @returns {boolean} - true if there is a pending event waiting to be emitted, false otherwise.
    */
-  isPrimed() {
+  isPending() {
     return (this._timeout !== null);
   }
 
@@ -64,7 +64,7 @@ class RateLimitedEmitter extends EventEmitter {
       this._emit_data();
       return;
     }
-    if (this.isPrimed()) return;
+    if (this.isPending()) return;
     this._timeout = setTimeout(() => this._emit_data(), emit_wait_time_ms);
   }
 
