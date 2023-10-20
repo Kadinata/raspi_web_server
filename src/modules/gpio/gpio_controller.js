@@ -7,7 +7,7 @@ const logger = require('../logger').getLogger('GPIO');
 
 const STREAM_RATE_LIMIT = 100;
 
-class Gpio extends RateLimitedEmitter {
+class GpioController extends RateLimitedEmitter {
 
   constructor(gpio_bank, rate_limit = STREAM_RATE_LIMIT) {
     super(rate_limit)
@@ -15,7 +15,7 @@ class Gpio extends RateLimitedEmitter {
     this._gpio_bank.getUsablePins().forEach((pin_num) => {
       this._gpio_bank.watch(pin_num, (value, err) => this._emit_pin_state(pin_num, err));
     });
-    logger.info('GPIO instance created');
+    logger.info('GPIO Controller instance created');
   };
 
   setPinStates(pinStates = {}) {
@@ -65,5 +65,5 @@ class Gpio extends RateLimitedEmitter {
   }
 }
 
-module.exports = Gpio;
+module.exports = GpioController;
 //===========================================================================
