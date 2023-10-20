@@ -4,7 +4,7 @@
   "description": "Backend for an app hosted on a Raspberry Pi",
   "main": "index.js",
   "scripts": {
-    "test": "jest --collect-coverage"
+    "test": "jest --coverage --collectCoverageFrom='src/**/*.js'"
   },
   "author": "Kvad",
   "license": "ISC",
