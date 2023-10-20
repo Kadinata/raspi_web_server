@@ -24,7 +24,8 @@ const login = (req, res, next) => {
 
     req.login(user, { session }, (err) => {
       if (err) {
-        return next(new Errors.Unauthorized(err));
+        const { message } = err;
+        return next(new Errors.Unauthorized(message));
       }
 
       const payload = { user };
