@@ -5,11 +5,13 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const logger = require('../modules/logger').getLogger('APP');
-const static_route = require('../routes/static');
 const app_modules = require('./modules');
 const apiRoutes = require('./api_routes');
 const { requestLogger } = require('../modules/logger');
 const { ErrorHandler } = require('../modules/endpoint_handler');
+const path = require('path');
+
+const PUBLIC_DIRPATH = path.join(__dirname, '../../public');
 
 const initialize = async () => {
 
@@ -31,7 +33,7 @@ const initialize = async () => {
   app.use(modules());
   app.use(requestLogger);
   app.use(apiRoutes.initialize('/api/v1'));
-  app.use(static_route);
+  app.use(express.static(PUBLIC_DIRPATH));
   app.use(ErrorHandler);
 
   const start = (port) => {
