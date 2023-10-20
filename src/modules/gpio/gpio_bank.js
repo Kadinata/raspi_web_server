@@ -1,9 +1,6 @@
 //===========================================================================
 //  
 //===========================================================================
-const { Gpio } = require('onoff');
-const exitHandler = require('../utils/exit_handler');
-
 const PIN_COUNT = 28;
 const DEBOUNCE_TIMEPOUT = 10;
 
@@ -15,7 +12,7 @@ const LOCKED_PINS = [14, 15];
 
 class GpioBank {
 
-  constructor() {
+  constructor(GpioPin) {
     this._pins = [];
     this._disposed = false;
 
@@ -30,7 +27,7 @@ class GpioBank {
       if (LOCKED_PINS.includes(pin_num)) {
         this._pins.push(null);
       } else {
-        this._pins.push(new Gpio(pin_num, direction, edge, options));
+        this._pins.push(new GpioPin(pin_num, direction, edge, options));
       }
     }
   }

@@ -9,9 +9,9 @@ const STREAM_RATE_LIMIT = 100;
 
 class Gpio extends RateLimitedEmitter {
 
-  constructor(rate_limit = STREAM_RATE_LIMIT) {
+  constructor(gpio_bank, rate_limit = STREAM_RATE_LIMIT) {
     super(rate_limit)
-    this._gpio_bank = new GpioBank();
+    this._gpio_bank = gpio_bank;
     this._gpio_bank.getUsablePins().forEach((pin_num) => {
       this._gpio_bank.watch(pin_num, (value, err) => this._emit_pin_state(pin_num, err));
     });
