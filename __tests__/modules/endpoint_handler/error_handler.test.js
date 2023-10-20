@@ -8,7 +8,6 @@ const make_res = () => {
   const res = {};
   res.status = jest.fn((status_code) => res);
   res.json = jest.fn((data) => {
-    console.log({ data });
     return res;
   });
   return res;
