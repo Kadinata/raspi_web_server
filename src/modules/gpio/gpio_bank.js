@@ -1,6 +1,8 @@
 //===========================================================================
 //  
 //===========================================================================
+const Pinouts = require('./pinouts');
+
 const PIN_COUNT = 28;
 const DEBOUNCE_TIMEPOUT = 10;
 
@@ -42,6 +44,10 @@ class GpioBank {
 
   static get FLAG_PIN_HIGH() {
     return FLAG_PIN_HIGH;
+  }
+
+  static get PINOUTS() {
+    return ({ ...Pinouts });
   }
 
   pins() {
