@@ -12,12 +12,8 @@ const initialize = async (path_to_db_file) => {
     logger.info('Connection to database has been closed');
   };
 
-  try {
-    await handle.init(path_to_db_file);
-    await user_model.init();
-  } catch (err) {
-    throw err;
-  }
+  await handle.init(path_to_db_file);
+  await user_model.init();
 
   logger.info('Database module has been initialized');
   return { handle, user_model, close };
