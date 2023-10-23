@@ -44,7 +44,8 @@ describe('API Endpoint Error Handler Tests', () => {
     expect(res.status).toHaveBeenCalledTimes(2);
     expect(res.json).toHaveBeenCalledTimes(2);
     expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.json).toHaveBeenCalledWith({ status: 'error', message: 'an induced error' });
+    expect(res.json.mock.calls[0][0].status).toEqual('error');
+    expect(res.json.mock.calls[0][0].message).not.toEqual('an induced error');
   });
 });
 //===========================================================================
