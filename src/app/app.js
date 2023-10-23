@@ -6,7 +6,8 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const logger = require('../modules/logger').getLogger('APP');
 const app_modules = require('./modules');
-const apiRoutes = require('./api_routes');
+const api_routes = require('./api_routes');
+const static_routes = require('../routes/static');
 const { requestLogger } = require('../modules/logger');
 const { ErrorHandler } = require('../modules/endpoint_handler');
 
@@ -29,8 +30,8 @@ const initialize = async (config) => {
   app.use(express.urlencoded({ extended: true }));
   app.use(modules());
   app.use(requestLogger);
-  app.use(apiRoutes.initialize(config.API_ROOT_ENDPOINT));
-  app.use(express.static(config.PATH_PUBLIC_DIR));
+  app.use(api_routes.initialize(config.API_ROOT_ENDPOINT));
+  app.use(static_routes.initialize(config.PATH_PUBLIC_DIR));
   app.use(ErrorHandler);
 
   const start = (port = config.DEFAULT_SERVER_PORT) => {
