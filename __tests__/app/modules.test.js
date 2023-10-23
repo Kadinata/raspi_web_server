@@ -7,6 +7,9 @@ const sysinfo_middleware = require('../../src/middlewares/sysinfo/sysinfo');
 const heartbeat_middleware = require('../../src/middlewares/heartbeat/heartbeat');
 const app_modules = require('../../src/app/modules');
 
+const JWT_SECRET_PATH = 'path/to/jwt/secret.key';
+const DATABASE_PATH = 'path/to/database.db';
+
 const TEST_AUTH_PROVIDER = 'This is an auth provider';
 const TEST_GPIO_PROVIDER = 'This is a GPIO provider';
 const TEST_SYSINFO_PROVIDER = 'This is a sysinfo provider';
@@ -39,7 +42,7 @@ describe('Top Level App Module Tests', () => {
     expect(sysinfo_middleware.initialize).toHaveBeenCalledTimes(0);
     expect(heartbeat_middleware.initialize).toHaveBeenCalledTimes(0);
 
-    const providers = await app_modules.initialize();
+    const providers = await app_modules.initialize(JWT_SECRET_PATH, DATABASE_PATH);
 
     expect(typeof providers).toBe('function');
     expect(auth_middleware.initialize).toHaveBeenCalledTimes(1);
