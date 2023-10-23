@@ -62,16 +62,14 @@ class DataSampler extends EventEmitter {
   }
 
   /** @private Internal function to be used as setInterval handler */
-  _sample_data() {
-    (async () => {
-      try {
-        const data = await this.dataSource();
-        this.emit('data', data);
-      } catch (err) {
-        logger.error(`[${this.name}] An error occurred while sampling data. ${err}`);
-        this.emit('error', err);
-      }
-    })();
+  async _sample_data() {
+    try {
+      const data = await this.dataSource();
+      this.emit('data', data);
+    } catch (err) {
+      logger.error(`[${this.name}] An error occurred while sampling data. ${err}`);
+      this.emit('error', err);
+    }
   }
 }
 
