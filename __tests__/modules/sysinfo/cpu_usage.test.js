@@ -128,7 +128,6 @@ describe('CPU Usage Calculation Tests', () => {
     jest.runAllTimers();
 
     expect(usage.measurements).toEqual(EXPECTED_USAGE_MEASUREMENTS);
-
   });
 
   it('should compute no change in CPU time accurately', () => {
@@ -169,7 +168,7 @@ describe('CPU Usage Calculation Tests', () => {
     expect(usage.measurements).toEqual(EXPECTED_USAGE_MEASUREMENTS);
   });
 
-  it('should measure new CPU usage when measure() is invoked', () => {
+  it('should compute CPU usage when the instance is running', () => {
 
     const DATE_TIMESTAMP_1 = 1000;
     const DATE_TIMESTAMP_2 = 2000;
@@ -227,18 +226,18 @@ describe('CPU Usage Calculation Tests', () => {
     expect(mock_date_now).toHaveBeenCalledTimes(1);
     expect(os.cpus).toHaveBeenCalledTimes(1);
 
-    jest.runAllTimers();
+    jest.advanceTimersByTime(500);
 
     expect(mock_date_now).toHaveBeenCalledTimes(2);
     expect(os.cpus).toHaveBeenCalledTimes(2);
     expect(usage.measurements).toEqual(EXPECTED_FIRST_USAGE_MEASUREMENTS);
 
-    usage.measure();
+    usage.start(1000);
+    jest.advanceTimersByTime(1000);
 
     expect(mock_date_now).toHaveBeenCalledTimes(3);
     expect(os.cpus).toHaveBeenCalledTimes(3);
     expect(usage.measurements).toEqual(EXPECTED_SECOND_USAGE_MEASUREMENTS);
-
   });
 });
 //===========================================================================

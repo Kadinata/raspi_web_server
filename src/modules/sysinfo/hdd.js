@@ -14,15 +14,10 @@ const process_drive_info = (drv_info) => {
 
 module.exports = async () => {
   const command = "df -T -BM -x tmpfs -x devtmpfs -x rootfs";
-  try {
-    let drives = await exec_promise(command);
-    drives = drives.split('\n');
-    drives = drives.slice(1, drives.length - 1);
-    drives = drives.map(d => process_drive_info(d));
-    return drives;
-  } catch (err) {
-    return Promise.reject(err);
-  }
+  let drives = await exec_promise(command);
+  drives = drives.split('\n');
+  drives = drives.slice(1, drives.length - 1);
+  drives = drives.map(d => process_drive_info(d));
+  return drives;
 };
-
 //===========================================================================

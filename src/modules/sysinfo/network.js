@@ -38,11 +38,6 @@ const get_interface_stats = async ({ iface, ipaddr }) => {
 
 module.exports = async () => {
   const interfaces = get_network_interfaces();
-  try {
-    return Promise.all(interfaces.map(get_interface_stats));
-  } catch (err) {
-    return Promise.reject(err);
-  }
+  return Promise.all(interfaces.map(get_interface_stats));
 };
-
 //===========================================================================
