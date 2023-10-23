@@ -26,7 +26,6 @@ const TEST_SYSINFO_API_GET_RESPONSE = 'This is a response to GET /sysinfo';
 const TEST_SYSINFO_API_POST_RESPONSE = 'This is a response to POST /sysinfo';
 const TEST_HEARTBEAT_API_GET_RESPONSE = 'This is a response to GET /heartbeat';
 const TEST_HEARTBEAT_API_POST_RESPONSE = 'This is a response to POST /heartbeat';
-const TEST_NOT_FOUND_RESPONSE = 'Not found!';
 
 const TEST_AUTH_API_ENDPOINT = api_endpoint.create();
 const TEST_GPIO_API_ENDPOINT = api_endpoint.create();
