@@ -295,6 +295,9 @@ describe('Auth Passport Configuration Tests', () => {
     const session = 'false';
 
     req.body = TEST_USERS[0];
+    req.cookies = {
+      jwt: jwt.sign({ notuser: 'not user' }, TEST_JWT_SECRET),
+    };
 
     MOCK_AUTH.causeError();
 
@@ -323,6 +326,16 @@ describe('Auth Passport Configuration Tests', () => {
     expect(MOCK_AUTH.registerUser).toHaveBeenCalledTimes(1);
     expect(MOCK_AUTH.authenticateUser).toHaveBeenCalledTimes(1);
     expect(MOCK_AUTH.authenticateUser).toHaveBeenCalledWith(TEST_USERS[0].username, TEST_USERS[0].password);
+
+    /** Test error handling while processing JWT */
+    const jwt_handler = passport.authenticate(AuthMode.JWT, { session }, (err, user, info) => {
+      expect(err).toEqual(null);
+      expect(user).toBeFalsy();
+      expect(info).toBeDefined();
+      expect(typeof info.message).toEqual('string');
+    });
+
+    jwt_handler(req, res, () => null);
   });
 });
 //===========================================================================

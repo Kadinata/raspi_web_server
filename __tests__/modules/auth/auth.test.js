@@ -141,7 +141,7 @@ describe('Auth Class Tests', () => {
     expect(result).toEqual(null);
   });
 
-  it('should allow a user with correct password to update password', async () => { 
+  it('should allow a user with correct password to update password', async () => {
     const auth = new Auth(db.user_model, TEST_JWT_SECRET);
 
     expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
@@ -206,7 +206,7 @@ describe('Auth Class Tests', () => {
     expect(result_login).toEqual(user);
   });
 
-  it('should not allow a user to update to the same password', async () => { 
+  it('should not allow a user to update to the same password', async () => {
     const auth = new Auth(db.user_model, TEST_JWT_SECRET);
 
     expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
@@ -234,7 +234,7 @@ describe('Auth Class Tests', () => {
     expect(result_login).toEqual(user);
   });
 
-  it('should not allow a nonexistent user to update password', async () => { 
+  it('should not allow a nonexistent user to update password', async () => {
     const auth = new Auth(db.user_model, TEST_JWT_SECRET);
 
     expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
@@ -262,7 +262,7 @@ describe('Auth Class Tests', () => {
     expect(result_login).toEqual(user);
   });
 
-  it('should not allow passwords to be updated into an empty string', async () => { 
+  it('should not allow passwords to be updated into an empty string', async () => {
     const auth = new Auth(db.user_model, TEST_JWT_SECRET);
 
     expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
@@ -290,7 +290,47 @@ describe('Auth Class Tests', () => {
     expect(result_login).toEqual(user);
   });
 
-  it('should be able to find user by ID', async () => { 
+  it('should handle password update failure gracefully', async () => {
+    const auth = new Auth(db.user_model, TEST_JWT_SECRET);
+
+    /** Mock the user model's update password to induce an error */
+    const mock_user_update_password = jest.spyOn(db.user_model, 'updatePassword')
+      .mockImplementationOnce((user_id, new_password) => {
+        throw new Error('An induced error has occurred.');
+      });
+
+    expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
+
+    /** Register a test user */
+    const user = await auth.registerUser(TEST_USERS[0].username, TEST_USERS[0].password);
+    expect(mock_bcrypt_hash).toHaveBeenCalledTimes(1);
+    expect(user).not.toEqual(null);
+    expect(user.username).toEqual(TEST_USERS[0].username);
+    expect(user.id).not.toBeUndefined();
+    expect(user.created).not.toBeUndefined();
+
+    expect(mock_bcrypt_compare).toHaveBeenCalledTimes(0);
+
+    /** Logging in with the correct current password should succeed */
+    const result_login_1 = await auth.authenticateUser(TEST_USERS[0].username, TEST_USERS[0].password);
+    expect(mock_bcrypt_compare).toHaveBeenCalledTimes(1);
+    expect(result_login_1).toEqual(user);
+
+    /** Updating password with the correct current password should succeed */
+    const result_update_pw = await auth.updateUserPassword(user.id, TEST_USERS[0].password, TEST_USERS[1].password);
+    expect(mock_user_update_password).toHaveBeenCalledTimes(1);
+    expect(mock_bcrypt_compare).toHaveBeenCalledTimes(2);
+    expect(mock_bcrypt_hash).toHaveBeenCalledTimes(2);
+    expect(result_update_pw.error).not.toEqual(null);
+    expect(result_update_pw.user).toEqual(null);
+
+    /** Logging in with the original password should still succeed */
+    const result_login_2 = await auth.authenticateUser(TEST_USERS[0].username, TEST_USERS[0].password);
+    expect(mock_bcrypt_compare).toHaveBeenCalledTimes(3);
+    expect(result_login_2).toEqual(user);
+  });
+
+  it('should be able to find user by ID', async () => {
     const auth = new Auth(db.user_model, TEST_JWT_SECRET);
 
     expect(mock_bcrypt_hash).toHaveBeenCalledTimes(0);
@@ -313,7 +353,5 @@ describe('Auth Class Tests', () => {
     const result_2 = await auth.findUserById(0xBADDF00D);
     expect(result_2).toEqual(null);
   });
-
 });
-
 //===========================================================================

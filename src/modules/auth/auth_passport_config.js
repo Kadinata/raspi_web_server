@@ -14,43 +14,47 @@ const extractCookie = (req) => {
 };
 
 const handleRegistration = async (auth, username, password, done) => {
+  let user = null;
+
   try {
-    const user = await auth.registerUser(username, password);
-    if (user === null) {
-      const message = 'Username already taken';
-      return done(null, null, { message });
-    }
-    return done(null, user);
+    user = (await auth.registerUser(username, password)) || null;
   } catch (err) {
     return done(err);
   }
+
+  if (user === null) {
+    const message = 'Username already taken';
+    return done(null, null, { message });
+  }
+
+  return done(null, user);
 };
 
 const handleLogin = async (auth, username, password, done) => {
+  let user = null;
+
   try {
-    const user = await auth.authenticateUser(username, password);
-    if (user === null) {
-      const message = 'Incorrect username and/or password';
-      return done(null, null, { message });
-    }
-    return done(null, user);
+    user = (await auth.authenticateUser(username, password)) || null;
   } catch (err) {
     return done(err);
   }
+
+  if (user === null) {
+    const message = 'Incorrect username and/or password';
+    return done(null, null, { message });
+  }
+  return done(null, user);
 };
 
 const handleJWTAuth = async (jwt_payload, done) => {
-  try {
-    const { user = null } = jwt_payload;
-    if (user === null) {
-      const message = 'User not found';
-      return done(null, null, { message });
-    }
+  const { user = null } = jwt_payload;
 
-    done(null, user);
-  } catch (err) {
-    return done(err);
+  if (user === null) {
+    const message = 'User not found';
+    return done(null, null, { message });
   }
+
+  done(null, user);
 };
 
 const configure = (auth, jwt_secret) => {
