@@ -37,7 +37,9 @@ class GpioController extends RateLimitedEmitter {
       this._gpio_bank.setPinState(pin_num, state);
       new_pin_states[pin_num] = this._gpio_bank.getPinState(pin_num);
     });
-    this.emit('data', new_pin_states);
+    if (io_pins.length !== 0) {
+      this.emit('data', new_pin_states);
+    }
   }
 
   getPinStates() {

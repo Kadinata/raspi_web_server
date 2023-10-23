@@ -264,7 +264,7 @@ describe('GPIO Bank Tests', () => {
   it('should ignore attempts to access pins that do not exist', () => {
 
     const pin_callback = jest.fn();
-    
+
     const instance = new GpioBank(onoff.Gpio);
 
     /** Attempting to access pins that do not exist should return null */
@@ -282,6 +282,26 @@ describe('GPIO Bank Tests', () => {
     instance.watch(PIN_COUNT, pin_callback);
     instance.unwatch(-1);
     instance.unwatch(PIN_COUNT);
+  });
+
+  it('should return the pinouts of the GPIO bank', () => {
+
+    const pinouts = GpioBank.PINOUTS;
+
+    /** Test the numbers of the I2C pins */
+    expect(pinouts.I2C_PINS.SCL).toEqual(3);
+    expect(pinouts.I2C_PINS.SDA).toEqual(2);
+
+    /** Test the numbers of the SPI pins */
+    expect(pinouts.SPI_PINS.SCLK).toEqual(11);
+    expect(pinouts.SPI_PINS.MOSI).toEqual(10);
+    expect(pinouts.SPI_PINS.MISO).toEqual(9);
+    expect(pinouts.SPI_PINS.CE0).toEqual(8);
+    expect(pinouts.SPI_PINS.CE1).toEqual(7);
+
+    /** Test the numbers of the UART pins */
+    expect(pinouts.UART_PINS.TXD).toEqual(14);
+    expect(pinouts.UART_PINS.RXD).toEqual(15);
   });
 })
 //===========================================================================

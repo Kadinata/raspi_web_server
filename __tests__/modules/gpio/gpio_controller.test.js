@@ -55,7 +55,7 @@ describe('GPIO Controller Tests', () => {
   });
 
   it('should dispose its underlying resources when destroyed', () => {
-    const instance = new GpioController(gpio_bank, DEFAULT_RATE_LIMIT);
+    const instance = new GpioController(gpio_bank);
     expect(gpio_bank.destroy).toHaveBeenCalledTimes(0);
 
     instance.destroy();
@@ -98,12 +98,33 @@ describe('GPIO Controller Tests', () => {
     instance.onData(listener);
     expect(listener).toHaveBeenCalledTimes(0);
 
+    /** Call setPinStates with valid data */
     instance.setPinStates(pin_state_data);
     expect(gpio_bank.setPinState).toHaveBeenCalledTimes(TEST_GPIO_BANK_USABLE_PINS.length);
     expect(gpio_bank.getPinState).toHaveBeenCalledTimes(TEST_GPIO_BANK_USABLE_PINS.length);
 
     expect(listener).toHaveBeenCalledTimes(1);
     expect(listener).toHaveBeenCalledWith(pin_state_data);
+  });
+
+  it('should be a no-OP if setPinStates() is called with no argument', () => {
+    const listener = jest.fn();
+
+    gpio_bank.pinCount.mockReturnValue(TEST_GPIO_BANK_USABLE_PINS.length);
+
+    const instance = new GpioController(gpio_bank, DEFAULT_RATE_LIMIT);
+    expect(gpio_bank.setPinState).toHaveBeenCalledTimes(0);
+    expect(gpio_bank.getPinState).toHaveBeenCalledTimes(0);
+
+    instance.onData(listener);
+    expect(listener).toHaveBeenCalledTimes(0);
+
+    /** Call setPinStates with no data */
+    instance.setPinStates();
+    expect(gpio_bank.setPinState).toHaveBeenCalledTimes(0);
+    expect(gpio_bank.getPinState).toHaveBeenCalledTimes(0);
+
+    expect(listener).toHaveBeenCalledTimes(0);
   });
 
   it('should throw an error if setPinStates cannot parse its arguments', () => {
