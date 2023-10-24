@@ -18,7 +18,7 @@ This project is the result of my ongoing effort to learn various web development
   # 1. Clone the repository
 
   cd <project_dir>
-  git clone "<TBD>" .
+  git clone https://github.com/Kadinata/raspi_web_server.git .
 
 
   # 2. If the project was cloned to a personal machine,
