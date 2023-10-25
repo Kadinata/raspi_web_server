@@ -11,7 +11,6 @@ This project is the result of my ongoing effort to learn various web development
 ## Installation & Setup
 
 * Prerequisites
-  * Make sure SSH is enabled on the Raspberry Pi
   * Make sure Node.js is installed on the Raspberry Pi
 
   ```bash
@@ -41,6 +40,20 @@ This project is the result of my ongoing effort to learn various web development
   ```
 
 The final step should have launched a web server listening on port `3000` which serves the single page application. The page can be viewed at [raspberrypi.local:3000](http://raspberrypi.local:3000/)
+
+## Tests
+
+Use the following command to run all tests:
+
+```
+npm run test
+```
+
+Or to run tests on a specific file
+
+```
+npm run test -- <path to test file>
+```
 
 ## APIs
 
