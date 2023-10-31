@@ -11,7 +11,7 @@ This project is the result of my ongoing effort to learn various web development
 ## Installation & Setup
 
 * Prerequisites
-  * Make sure Node.js is installed on the Raspberry Pi
+  * Make sure Node.js and npm are installed on the Raspberry Pi
 
   ```bash
   # 1. Clone the repository
@@ -32,8 +32,11 @@ This project is the result of my ongoing effort to learn various web development
   cd <project dir>
   node install
 
+
   # 4. Copy the single page app build 
-  ## (TBD)
+  # Clone the web app from this repository: https://github.com/Kadinata/raspi_web_app
+  # Run "npm run build" to build it and copy the contents of the build directory into this repo's public directory
+
   
   # 5. Launch the server
   node index.js
