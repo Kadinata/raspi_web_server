@@ -3,8 +3,8 @@
 This is a simple Raspberry Pi-hosted web server written in [Express](http://expressjs.com/) and [Node.js](http://nodejs.org/). The server serves a [single-page application](https://github.com/Kadinata/raspi_web_app) written in [React](https://react.dev/) and provides RESTful APIs for functionalities including:
 
 * New user registration and user authentication
-* Read system information in real time
-* Control GPIO pins and read their states in real time
+* Reading system information in real time
+* Controlling GPIO pins and reading their states in real time
 
 This project is the result of my ongoing effort to learn various web development technologies with emphasis on servers hosted on embedded Linux devices.
 
