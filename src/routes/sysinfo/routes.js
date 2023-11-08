@@ -26,7 +26,7 @@ const initialize = () => {
   const getLocalTimeInfo = getHandler((req) => req.sysinfo.systime.getLocaltime());
   const getCpuUsageInfo = getHandler((req) => req.sysinfo.cpu_usage.measurements());
   const getAllSystemInfo = getHandler((req) => req.sysinfo.fetchAll());
-  const streamHandler = (req, res, next) => req.sysinfo.sse_handler.handleRequest(req, res, next);
+  const streamHandler = (req, res, next) => req.sysinfo.sse_handler.subscribe('sysinfo', res);
 
   router.use(protectedRoute, validateSysinfo);
   router.get('/', getAllSystemInfo);

@@ -21,83 +21,77 @@ class SSEHandler extends EventEmitter {
   }
 
   /**
-   * Handles a new request, configures the response header for SSE, 
-   * and adds the request to the list of active listeners.
-   * @param {object} req - HTTP request object from the client
+   * Handles a new request and configure the response header for SSE, 
+   * then adds the request as a subscriber to the provided topic.
+   * @param {string} subject - Subject or event name the request object is subscribing to.
    * @param {object} res - HTTP response objcet for the client
-   * @param {function} next - Function to call the next express handler
    */
-  handleRequest(req, res, next) {
+  subscribe(subject, res,) {
     const headers = {
       'Content-Type': 'text/event-stream',
       'Connection': 'keep-alive',
       'Cache-Control': 'no-cache'
     };
     res.writeHead(200, headers);
-    this.addClient(res);
+    this.addClient(subject, res);
   }
 
   /**
    * Add a new SSE listener and assigns an ID to it. The listener will be auto-removed 
    * from the list of active listeners when the client closes the connection. 
    * Once added, the new active listener count will be emitted.
+   * @param {string} subject - Subject or event name the request object is subscribing to.
    * @param {object} res - HTTP response objcet for the client
    */
-  addClient(res) {
+  addClient(subject, res) {
     res.client_id = crypto.randomUUID();
 
     const listener = (payload) => res.write(payload);
-    this.publisher.on('data', listener);
+    this.publisher.on(subject, listener);
 
     res.on('close', () => {
-      this.publisher.removeListener('data', listener);
-      this.removeClient(res);
+      this.publisher.removeListener(subject, listener);
+      res.end();
+      this._emit_client_change(subject);
+      logger.info(`[${this.name}] SSE client removed for subject ${subject}; client_id: ${res.client_id}; client count: ${this.getClientCount(subject)}`);
     });
 
-    this._emit_client_change();
-    logger.info(`[${this.name}] SSE client added; client_id: ${res.client_id}; client count: ${this.getClientCount()}`);
+    this._emit_client_change(subject);
+    logger.info(`[${this.name}] SSE client added for subject ${subject}; client_id: ${res.client_id}; client count: ${this.getClientCount(subject)}`);
   }
 
   /**
-   * Remove the client with the given ID from the list of listeners and emits the new 
-   * active listener count. Connection to the removed listener will be closed.
-   * @param {object} res - HTTP response objcet for the client to remove
+   * Returns the total number of listeners subscribed to the provided subject.
+   * @param {string} subject - Subject or event name being listened for.
+   * @returns {int} The number listeners subscribed to the provided subject.
    */
-  removeClient(res) {
-    res.end();
-    this._emit_client_change();
-    logger.info(`[${this.name}] SSE client removed; client_id: ${res.client_id}; client count: ${this.getClientCount()}`);
-  }
-
-  /**
-   * Returns the total number of clients registered to this SSE handler instance.
-   * @returns {int} The number clients registered to this SSE handler instance
-   */
-  getClientCount() {
-    return this.publisher.listenerCount('data');
+  getClientCount(subject) {
+    return this.publisher.listenerCount(subject);
   }
 
   /**
    * Register a client count change listener to this SSE handler instance.
-   * @param {function} callback - The callback function to be invoked 
+   * @param {string} subject - Subject or event name being listened for.
+   * @param {function} callback - The callback function to be invoked
    * when the number of clients of this SSE Handler changes.
    */
-  onClientCountChange(callback) {
-    this.on('clientChange', (count) => callback(count));
+  onClientCountChange(subject, callback) {
+    this.on(`${subject}/clientChange`, (count) => callback(count));
   }
 
   /**
    * Send data to the clients
+   * @param {string} subject - Subject or event name to publish the data to.
    * @param {object} data - Data to push to the clients
    */
-  send(data) {
+  send(subject, data) {
     const payload = `event: message\ndata: ${JSON.stringify(data)}\n\n`;
-    this.publisher.emit('data', payload);
+    this.publisher.emit(subject, payload);
   }
 
   /** @private Emits the current count of active listeners */
-  _emit_client_change() {
-    this.emit('clientChange', this.getClientCount());
+  _emit_client_change(subject) {
+    this.emit(`${subject}/clientChange`, this.getClientCount(subject));
   }
 }
 

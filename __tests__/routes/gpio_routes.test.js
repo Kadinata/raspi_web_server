@@ -115,12 +115,12 @@ describe('GPIO Express Routes Tests', () => {
     });
     s_app.use(ErrorHandler);
 
-    expect(MOCK_GPIO.sse_handler.handleRequest).toHaveBeenCalledTimes(0);
+    expect(MOCK_GPIO.sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(s_app).get('/stream');
-    expect(MOCK_GPIO.sse_handler.handleRequest).toHaveBeenCalledTimes(1);
+    expect(MOCK_GPIO.sse_handler.subscribe).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 

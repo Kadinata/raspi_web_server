@@ -57,7 +57,7 @@ describe('SysInfo Middleware Tests', () => {
     expect(typeof req.sysinfo.get_callback()).toEqual('function');
     req.sysinfo.get_callback()(0xBADDF00D);
     expect(mock_sysinfo_sse_send).toHaveBeenCalledTimes(1);
-    expect(mock_sysinfo_sse_send).toHaveBeenCalledWith(0xBADDF00D);
+    expect(mock_sysinfo_sse_send).toHaveBeenCalledWith('sysinfo', 0xBADDF00D);
   });
 
   it('should start sysinfo stream if there is a client and stop it if there is no client', () => {
@@ -74,11 +74,11 @@ describe('SysInfo Middleware Tests', () => {
     expect(mock_sysinfo_stream_start).toHaveBeenCalledTimes(0);
     expect(mock_sysinfo_stream_stop).toHaveBeenCalledTimes(0);
 
-    req.sysinfo.sse_handler.emit('clientChange', 1);
+    req.sysinfo.sse_handler.emit('sysinfo/clientChange', 1);
     expect(mock_sysinfo_stream_start).toHaveBeenCalledTimes(1);
     expect(mock_sysinfo_stream_stop).toHaveBeenCalledTimes(0);
 
-    req.sysinfo.sse_handler.emit('clientChange', 0);
+    req.sysinfo.sse_handler.emit('sysinfo/clientChange', 0);
     expect(mock_sysinfo_stream_start).toHaveBeenCalledTimes(1);
     expect(mock_sysinfo_stream_stop).toHaveBeenCalledTimes(1);
   });

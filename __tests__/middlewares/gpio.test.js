@@ -70,7 +70,7 @@ describe('GPIO Middleware Tests', () => {
     expect(typeof req.gpio.get_callback()).toEqual('function');
     req.gpio.get_callback()(0xBADDF00D);
     expect(mock_gpio_sse_send).toHaveBeenCalledTimes(1);
-    expect(mock_gpio_sse_send).toHaveBeenCalledWith(0xBADDF00D);
+    expect(mock_gpio_sse_send).toHaveBeenCalledWith('gpio', 0xBADDF00D);
   });
 });
 //===========================================================================

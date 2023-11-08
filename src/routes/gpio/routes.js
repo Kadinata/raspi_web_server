@@ -19,7 +19,7 @@ const initialize = () => {
   router.post('/', postHandler((req, payload) => req.gpio.setPinStates(payload)));
   router.get('/', getHandler((req) => req.gpio.getPinStates()));
   router.get('/usable_pins', getHandler((req) => req.gpio.getUsablePins()));
-  router.get('/stream', (req, res, next) => req.gpio.sse_handler.handleRequest(req, res, next));
+  router.get('/stream', (req, res, next) => req.gpio.sse_handler.subscribe('gpio', res));
 
   return router;
 };

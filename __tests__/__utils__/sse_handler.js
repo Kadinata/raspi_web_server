@@ -4,7 +4,7 @@
 const MockSSEHandler = (name) => {
   const _name = name;
 
-  handleRequest = jest.fn((req, res, next) => {
+  subscribe = jest.fn((subject, res) => {
     const headers = {
       'Content-Type': 'text/event-stream',
       'Connection': 'keep-alive',
@@ -15,7 +15,7 @@ const MockSSEHandler = (name) => {
 
   getName = jest.fn(() => _name);
 
-  return { handleRequest, getName };
+  return { subscribe, getName };
 };
 
 module.exports = MockSSEHandler;

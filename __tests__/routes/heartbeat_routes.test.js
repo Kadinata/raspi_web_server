@@ -46,13 +46,13 @@ describe('Sysinfo Express Routes Tests', () => {
   });
 
   test('responds to / by subscribing to the heartbeat stream', async () => {
-    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(app).get('/');
 
-    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(1);
+    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
@@ -69,14 +69,14 @@ describe('Sysinfo Express Routes Tests', () => {
       message: 'An internal server error occurred.'
     };
 
-    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     dependency_injector.setFailureMode(1);
 
     const res = await request(app).get('/');
-    expect(MOCK_HEARTBEAT.handleRequest).toHaveBeenCalledTimes(0);
+    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
