@@ -15,8 +15,8 @@ class SSEHandler extends EventEmitter {
     super();
 
     /** @private Object to keep track of active listeners */
-    this.clients = {};
     this.name = name;
+    this.publisher = new EventEmitter();
     logger.info(`[${this.name}] SSEHandler created`);
   }
 
@@ -34,40 +34,39 @@ class SSEHandler extends EventEmitter {
       'Cache-Control': 'no-cache'
     };
     res.writeHead(200, headers);
-    this.addClient(req, res);
+    this.addClient(res);
   }
 
   /**
    * Add a new SSE listener and assigns an ID to it. The listener will be auto-removed 
    * from the list of active listeners when the client closes the connection. 
    * Once added, the new active listener count will be emitted.
-   * @param {object} req - HTTP request object from the client
    * @param {object} res - HTTP response objcet for the client
    */
-  addClient(req, res) {
-    const client_id = crypto.randomUUID();
-    this.clients[`${client_id}`] = res;
-    res.on('close', () => this.removeClient(client_id));
+  addClient(res) {
+    res.client_id = crypto.randomUUID();
+
+    const listener = (payload) => res.write(payload);
+    this.publisher.on('data', listener);
+
+    res.on('close', () => {
+      this.publisher.removeListener('data', listener);
+      this.removeClient(res);
+    });
+
     this._emit_client_change();
-    logger.info(`[${this.name}] SSE client added; client_id: ${client_id}; client count: ${this.getClientCount()}`);
-    return client_id;
+    logger.info(`[${this.name}] SSE client added; client_id: ${res.client_id}; client count: ${this.getClientCount()}`);
   }
 
   /**
    * Remove the client with the given ID from the list of listeners and emits the new 
    * active listener count. Connection to the removed listener will be closed.
-   * @param {number} client_id - ID of the client to be removed
+   * @param {object} res - HTTP response objcet for the client to remove
    */
-  removeClient(client_id) {
-    client_id = `${client_id}`;
-    const {
-      [client_id]: removed,
-      ...clients
-    } = this.clients;
-    removed.end();
-    this.clients = clients;
+  removeClient(res) {
+    res.end();
     this._emit_client_change();
-    logger.info(`[${this.name}] SSE client removed; client_id: ${client_id}; client count: ${this.getClientCount()}`);
+    logger.info(`[${this.name}] SSE client removed; client_id: ${res.client_id}; client count: ${this.getClientCount()}`);
   }
 
   /**
@@ -75,7 +74,7 @@ class SSEHandler extends EventEmitter {
    * @returns {int} The number clients registered to this SSE handler instance
    */
   getClientCount() {
-    return Object.keys(this.clients).length;
+    return this.publisher.listenerCount('data');
   }
 
   /**
@@ -93,12 +92,12 @@ class SSEHandler extends EventEmitter {
    */
   send(data) {
     const payload = `event: message\ndata: ${JSON.stringify(data)}\n\n`;
-    Object.values(this.clients).forEach(res => res.write(payload));
+    this.publisher.emit('data', payload);
   }
 
   /** @private Emits the current count of active listeners */
   _emit_client_change() {
-    this.emit('clientChange', Object.keys(this.clients).length);
+    this.emit('clientChange', this.getClientCount());
   }
 }
 
