@@ -6,7 +6,7 @@ const { getHandler, postHandler, validateHandler } = require('../../modules/endp
 const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateGpio = validateHandler((req) => {
-  if (!!req.gpio && !!req.gpio.sse_handler) return;
+  if (!!req.gpio && !!req.sse_handler) return;
   const message = 'GPIO service has not been initialized!';
   throw new Error(message);
 });
@@ -19,7 +19,7 @@ const initialize = () => {
   router.post('/', postHandler((req, payload) => req.gpio.setPinStates(payload)));
   router.get('/', getHandler((req) => req.gpio.getPinStates()));
   router.get('/usable_pins', getHandler((req) => req.gpio.getUsablePins()));
-  router.get('/stream', (req, res, next) => req.gpio.sse_handler.subscribe('gpio', res));
+  router.get('/stream', (req, res, next) => req.sse_handler.subscribe('gpio', res));
 
   return router;
 };

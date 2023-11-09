@@ -39,7 +39,6 @@ const MOCK_SYSINFO = {
     getStartTime: jest.fn(() => SYSINFO_SYSTIME_START_TIME_DATA),
     getLocaltime: jest.fn(() => SYSINFO_SYSTIME_LOCAL_TIME_DATA),
   },
-  sse_handler: SSEHandler('SysInfo Routes Test'),
 };
 
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
@@ -52,9 +51,12 @@ jest.mock(
 describe('Sysinfo Express Routes Tests', () => {
 
   const app = express();
+  const sse_handler = SSEHandler('SysInfo Routes Test');
+
   const dependency_injector = DependencyInjector.create((failure_mode, req) => {
     if (failure_mode === DependencyInjector.NO_FAILURE) {
       req.sysinfo = MOCK_SYSINFO;
+      req.sse_handler = sse_handler;
     }
   });
 
@@ -244,12 +246,12 @@ describe('Sysinfo Express Routes Tests', () => {
     });
     s_app.use(ErrorHandler);
 
-    expect(MOCK_SYSINFO.sse_handler.subscribe).toHaveBeenCalledTimes(0);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(s_app).get('/stream');
-    expect(MOCK_SYSINFO.sse_handler.subscribe).toHaveBeenCalledTimes(1);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 

@@ -16,9 +16,8 @@ const GPIO_GET_USABLE_PINS_DATA = { data: 'gpio.getUsablePins()' };
 
 const MOCK_GPIO = {
   getPinStates: jest.fn(() => GPIO_GET_PIN_STATES_DATA),
-  setPinStates: jest.fn((payload) => null),
+  setPinStates: jest.fn(() => null),
   getUsablePins: jest.fn(() => GPIO_GET_USABLE_PINS_DATA),
-  sse_handler: SSEHandler('GPIO Routes Test'),
 };
 
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
@@ -30,9 +29,12 @@ jest.mock(
 
 describe('GPIO Express Routes Tests', () => {
   const app = express();
+  const sse_handler = SSEHandler('GPIO Routes Test');
+
   const dependency_injector = DependencyInjector.create((failure_mode, req) => {
     if (failure_mode === DependencyInjector.NO_FAILURE) {
       req.gpio = MOCK_GPIO;
+      req.sse_handler = sse_handler;
     }
   });
 
@@ -115,12 +117,12 @@ describe('GPIO Express Routes Tests', () => {
     });
     s_app.use(ErrorHandler);
 
-    expect(MOCK_GPIO.sse_handler.subscribe).toHaveBeenCalledTimes(0);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(s_app).get('/stream');
-    expect(MOCK_GPIO.sse_handler.subscribe).toHaveBeenCalledTimes(1);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 

@@ -6,7 +6,7 @@ const { getHandler, validateHandler } = require('../../modules/endpoint_handler'
 const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateSysinfo = validateHandler((req) => {
-  if (!!req.sysinfo && !!req.sysinfo.sse_handler) return;
+  if (!!req.sysinfo && !!req.sse_handler) return;
   const message = 'System Info service has not been initialized!';
   throw new Error(message);
 });
@@ -26,7 +26,7 @@ const initialize = () => {
   const getLocalTimeInfo = getHandler((req) => req.sysinfo.systime.getLocaltime());
   const getCpuUsageInfo = getHandler((req) => req.sysinfo.cpu_usage.measurements());
   const getAllSystemInfo = getHandler((req) => req.sysinfo.fetchAll());
-  const streamHandler = (req, res, next) => req.sysinfo.sse_handler.subscribe('sysinfo', res);
+  const streamHandler = (req, res, next) => req.sse_handler.subscribe('sysinfo', res);
 
   router.use(protectedRoute, validateSysinfo);
   router.get('/', getAllSystemInfo);

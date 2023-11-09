@@ -12,8 +12,6 @@ const { ErrorHandler } = require('../__utils__/error_handler');
 const EXPECTED_CONTENT_TYPE = 'application/json; charset=utf-8';
 const EXPECTED_EVENT_MESSAGE = `event: message\ndata: ${JSON.stringify({ status: 'connected' })}\n\n`;
 
-const MOCK_HEARTBEAT = SSEHandler('Heartbeat Routes Test');
-
 const mock_protected_route_handler = jest.fn((req, res, next) => next());
 
 jest.mock(
@@ -21,15 +19,16 @@ jest.mock(
   () => (req, res, next) => mock_protected_route_handler(req, res, next)
 );
 
-const dependency_injector = DependencyInjector.create((failure_mode, req) => {
-  if (failure_mode === DependencyInjector.NO_FAILURE) {
-    req.heartbeat = MOCK_HEARTBEAT;
-  }
-});
-
 describe('Sysinfo Express Routes Tests', () => {
 
   const app = express();
+  const sse_handler = SSEHandler('Heartbeat Routes Test');
+
+  const dependency_injector = DependencyInjector.create((failure_mode, req) => {
+    if (failure_mode === DependencyInjector.NO_FAILURE) {
+      req.sse_handler = sse_handler;
+    }
+  });
 
   beforeAll(() => {
     app.use(dependency_injector.middleware);
@@ -46,13 +45,13 @@ describe('Sysinfo Express Routes Tests', () => {
   });
 
   test('responds to / by subscribing to the heartbeat stream', async () => {
-    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     const res = await request(app).get('/');
 
-    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(1);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(1);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
@@ -69,14 +68,14 @@ describe('Sysinfo Express Routes Tests', () => {
       message: 'An internal server error occurred.'
     };
 
-    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(0);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(0);
 
     dependency_injector.setFailureMode(1);
 
     const res = await request(app).get('/');
-    expect(MOCK_HEARTBEAT.subscribe).toHaveBeenCalledTimes(0);
+    expect(sse_handler.subscribe).toHaveBeenCalledTimes(0);
     expect(dependency_injector.middleware).toHaveBeenCalledTimes(1);
     expect(mock_protected_route_handler).toHaveBeenCalledTimes(1);
 
