@@ -4,32 +4,20 @@
 const authProvider = require('../middlewares/auth');
 const gpioProvider = require('../middlewares/gpio');
 const sysinfoProvider = require('../middlewares/sysinfo');
-const sse = require('../modules/event_manager/sse_handler');
+const sseProvider = require('../middlewares/sse');
 const logger = require('../modules/logger').getLogger('APP_MODULE');
-
-const sse_provider = (sse_handler) => {
-
-  const provider = (req, res, next) => {
-    req.sse_handler = sse_handler;
-    next();
-  };
-
-  return provider;
-};
 
 const initialize = async (jwt_secret_path, database_path) => {
 
   logger.info('Initializing app modules...');
 
-  const sse_handler = sse.Handler('App SSE');
-
-  const sse_module = sse_provider(sse_handler);
+  const sse = sseProvider.initialize('App SSE');
   const auth = await authProvider.initialize(jwt_secret_path, database_path);
-  const sysinfo = sysinfoProvider.initialize(sse_handler);
-  const gpio = gpioProvider.initialize(sse_handler);
+  const sysinfo = sysinfoProvider.initialize(sse.handler);
+  const gpio = gpioProvider.initialize(sse.handler);
 
   const providers = () => ([
-    sse_module,
+    sse.provider,
     auth,
     sysinfo,
     gpio,
