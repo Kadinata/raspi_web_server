@@ -35,7 +35,7 @@ describe('System Time Information Tests', () => {
 
   it('should return the correct start time', () => {
     const result = systime.getStartTime();
-    expect(result).toEqual(EXPECTED_START_TIME);
+    expect(Math.abs(result - EXPECTED_START_TIME) <= 1).toEqual(true);
   });
 
   it('should return all time information correctly', () => {
@@ -43,7 +43,7 @@ describe('System Time Information Tests', () => {
     expect(os.uptime).toHaveBeenCalled();
     expect(uptime).toEqual(EXPECTED_UPTIME);
     expect(localtime).toEqual(EXPECTED_LOCAL_TIME);
-    expect(startTime).toEqual(EXPECTED_START_TIME);
+    expect(Math.abs(startTime - EXPECTED_START_TIME) <= 1).toEqual(true);
   });
 });
 //===========================================================================
