@@ -1,3 +1,5 @@
+<img src="https://github.com/Kadinata/raspi_web_server/actions/workflows/node.js.yml/badge.svg"/>
+
 # Raspberry Pi Web Server
 
 This is a simple Raspberry Pi-hosted web server written in [Express](http://expressjs.com/) and [Node.js](http://nodejs.org/). The server serves a [single-page application](https://github.com/Kadinata/raspi_web_app) written in [React](https://react.dev/) and provides RESTful APIs for functionalities including:
