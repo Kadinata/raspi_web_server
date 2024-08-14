@@ -6,7 +6,7 @@ const AuthMode = require('../../src/modules/auth/auth_mode');
 const jwt = require('jsonwebtoken');
 const JWTStrategy = require('passport-jwt').Strategy;
 const protectedRoute = require('../../src/middlewares/auth/protected_route');
-const Errors = require('../../src/modules/status_codes/error_codes');
+const Errors = require('../../src/common/status_codes/error_codes');
 
 const MOCK_JWT_SECRET = 'This is a test JWT secret';
 const MOCK_USER = { username: 'someUser' };

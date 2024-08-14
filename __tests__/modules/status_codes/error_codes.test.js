@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const Errors = require('../../../src/modules/status_codes/error_codes');
+const Errors = require('../../../src/common/status_codes/error_codes');
 
 const TEST_ERROR_MESSAGE = 'Test error message';
 

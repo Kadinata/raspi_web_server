@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const HttpErrors = require('../status_codes/error_codes');
+const HttpErrors = require('../../common/status_codes/error_codes');
 const logger = require('../../common/logger').getLogger('HANDLER');
 
 const error_message = 'An internal server error occurred.';

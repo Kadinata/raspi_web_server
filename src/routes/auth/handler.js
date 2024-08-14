@@ -3,7 +3,7 @@
 //===========================================================================
 const passport = require('passport');
 const logger = require('../../common/logger').getLogger('AUTH');
-const Errors = require('../../modules/status_codes/error_codes');
+const Errors = require('../../common/status_codes/error_codes');
 const AuthMode = require('../../modules/auth/auth_mode');
 
 const login = (req, res, next) => {

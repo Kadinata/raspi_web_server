@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const Errors = require('../status_codes/error_codes');
+const Errors = require('../../common/status_codes/error_codes');
 const logger = require('../../common/logger').getLogger('Error Handlers');
 
 const NotFoundHandler = (req, res, next) => {
