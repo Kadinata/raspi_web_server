@@ -4,7 +4,7 @@
 const sqlite3 = require('sqlite3').verbose();
 const fs = require('fs');
 const path = require('path');
-const logger = require('../logger').getLogger('DB');
+const logger = require('../../common/logger').getLogger('DB');
 
 const _ERR_MSG_DB_NOT_INITIALIZED = 'Database instance not initialized';
 const _ERR_MSG_DB_ALREADY_INITIALIZED = 'The database instance has already been initialized';

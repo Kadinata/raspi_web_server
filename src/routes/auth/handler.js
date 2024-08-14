@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const passport = require('passport');
-const logger = require('../../modules/logger').getLogger('AUTH');
+const logger = require('../../common/logger').getLogger('AUTH');
 const Errors = require('../../modules/status_codes/error_codes');
 const AuthMode = require('../../modules/auth/auth_mode');
 

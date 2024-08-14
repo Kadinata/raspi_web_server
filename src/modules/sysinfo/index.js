@@ -9,7 +9,7 @@ const network = require('./network');
 const systime = require('./systime');
 const CpuUsage = require('./cpu_usage');
 const sysinfoStream = require('./stream');
-const logger = require('../logger').getLogger('SYS_INFO');
+const logger = require('../../common/logger').getLogger('SYS_INFO');
 
 const CPU_USAGE_SAMPLE_PERIOD = 10000;
 

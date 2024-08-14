@@ -1,6 +1,6 @@
 const Database = require('./database');
 const UserModel = require('./users');
-const logger = require('../logger').getLogger('DB');
+const logger = require('../../common/logger').getLogger('DB');
 
 const initialize = async (path_to_db_file) => {
 

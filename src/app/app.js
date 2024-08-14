@@ -4,11 +4,11 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const logger = require('../modules/logger').getLogger('APP');
+const logger = require('../common/logger').getLogger('APP');
 const app_modules = require('./modules');
 const api_routes = require('./api_routes');
 const static_routes = require('../routes/static');
-const { requestLogger } = require('../modules/logger');
+const { requestLogger } = require('../common/logger');
 const { ErrorHandler } = require('../modules/endpoint_handler');
 
 const initialize = async (config) => {

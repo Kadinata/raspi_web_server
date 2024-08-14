@@ -4,7 +4,7 @@
 const onoff = require('onoff');
 const GpioController = require('./gpio_controller');
 const GpioBank = require('./gpio_bank');
-const logger = require('../logger').getLogger('GPIO');
+const logger = require('../../common/logger').getLogger('GPIO');
 
 const initialize = (state_listener_cb, rate_limit) => {
 

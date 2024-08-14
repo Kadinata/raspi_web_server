@@ -3,7 +3,7 @@
 //===========================================================================
 const GpioBank = require('./gpio_bank');
 const RateLimitedEmitter = require('../event_manager/rate_limited_emitter');
-const logger = require('../logger').getLogger('GPIO');
+const logger = require('../../common/logger').getLogger('GPIO');
 
 const STREAM_RATE_LIMIT = 100;
 

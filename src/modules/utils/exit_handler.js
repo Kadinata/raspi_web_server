@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const process = require('process');
-const logger = require('../logger').getLogger('EXIT_HANDLER');
+const logger = require('../../common/logger').getLogger('EXIT_HANDLER');
 
 const _callbacks = [];
 

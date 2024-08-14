@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
-const logger = require('../logger').getLogger('DATA_SAMPLER');
+const logger = require('../../common/logger').getLogger('DATA_SAMPLER');
 
 /** 
  * A class that samples data from the provided source

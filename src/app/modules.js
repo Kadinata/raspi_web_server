@@ -5,7 +5,7 @@ const authProvider = require('../middlewares/auth');
 const gpioProvider = require('../middlewares/gpio');
 const sysinfoProvider = require('../middlewares/sysinfo');
 const sseProvider = require('../middlewares/sse');
-const logger = require('../modules/logger').getLogger('APP_MODULE');
+const logger = require('../common/logger').getLogger('APP_MODULE');
 
 const initialize = async (jwt_secret_path, database_path) => {
 

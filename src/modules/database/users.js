@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const logger = require('../logger').getLogger('USERS');
+const logger = require('../../common/logger').getLogger('USERS');
 
 const _ERR_MSG_DB_HANDLE_IS_NULL = 'Unable to create user table because the database handle is null';
 const _ERR_MSG_USER_NOT_FOUND = 'Unable to find user with the provided user ID';
