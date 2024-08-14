@@ -3,7 +3,7 @@
 //===========================================================================
 const { EventEmitter } = require('events');
 const crypto = require('crypto');
-const logger = require('../../common/logger').getLogger('SSE_HANDLER');
+const logger = require('../logger').getLogger('SSE_HANDLER');
 
 /** 
  * A class for managing server-sent event (SSE) listeners
