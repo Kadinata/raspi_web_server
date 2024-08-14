@@ -7,7 +7,7 @@ const User = require('../../src/modules/database/users');
 const jwtsm = require('../../src/modules/jwt/jwt_secret_manager');
 const database = require('../../src/modules/database');
 const passport = require('passport');
-const exit_handler = require('../../src/modules/utils/exit_handler');
+const exit_handler = require('../../src/common/utils/exit_handler');
 
 const MOCK_JWT_SECRET = 'Test JWT Secret';
 const MOCK_JWT_SECRET_FILE = '/path/to/jwt/secret';
@@ -33,7 +33,7 @@ jest.mock('../../src/modules/auth/auth_passport_config', () => ({
   configure: jest.fn(),
 }));
 
-jest.mock('../../src/modules/utils/exit_handler', () => {
+jest.mock('../../src/common/utils/exit_handler', () => {
   mock_callbacks = [];
   return ({
     register: jest.fn((callbacks) => {

@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const GpioModule = require('../../modules/gpio');
-const exitHandler = require('../../modules/utils/exit_handler');
+const exitHandler = require('../../common/utils/exit_handler');
 
 const initialize = (sse_handler) => {
   const gpio = GpioModule.initialize((gpio_state) => sse_handler?.send('gpio', gpio_state));

@@ -3,7 +3,7 @@
 //===========================================================================
 const os = require('os');
 const os_info = require('../../../src/modules/sysinfo/os');
-const exec_promise = require('../../../src/modules/utils/exec_promise');
+const exec_promise = require('../../../src/common/utils/exec_promise');
 
 
 const HOSTNAME_COMMAND = 'hostname -I';
@@ -40,7 +40,7 @@ jest.mock('os', () => ({
   release: jest.fn(() => EXPECTED_RESULT.release),
 }));
 
-jest.mock('../../../src/modules/utils/exec_promise', () => jest.fn(
+jest.mock('../../../src/common/utils/exec_promise', () => jest.fn(
   async (command) => {
     switch (command) {
       case LSB_RELEASE_COMMAND:

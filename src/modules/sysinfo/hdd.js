@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const exec_promise = require('../utils/exec_promise');
+const exec_promise = require('../../common/utils/exec_promise');
 
 const process_drive_info = (drv_info) => {
   let [fs, type, total, used, avail, percent, mount] = drv_info.split(/\s+/g);

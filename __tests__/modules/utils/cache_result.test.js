@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const { cacheResult, cacheResultAsync } = require('../../../src/modules/utils/cache_result');
+const { cacheResult, cacheResultAsync } = require('../../../src/common/utils/cache_result');
 
 const ARG_1 = 2;
 const ARG_2 = "2";

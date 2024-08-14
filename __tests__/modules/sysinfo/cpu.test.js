@@ -3,7 +3,7 @@
 //===========================================================================
 const os = require('os');
 const cpu = require('../../../src/modules/sysinfo/cpu');
-const exec_promise = require('../../../src/modules/utils/exec_promise');
+const exec_promise = require('../../../src/common/utils/exec_promise');
 
 
 const MEASURE_TEMP_COMMAND = '/usr/bin/vcgencmd measure_temp';
@@ -44,7 +44,7 @@ jest.mock('os', () => ({
   ])),
 }));
 
-jest.mock('../../../src/modules/utils/exec_promise', () => jest.fn(
+jest.mock('../../../src/common/utils/exec_promise', () => jest.fn(
   async (command) => {
     switch (command) {
       case MEASURE_TEMP_COMMAND:

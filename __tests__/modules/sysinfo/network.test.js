@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const os = require('os');
-const exec_promise = require('../../../src/modules/utils/exec_promise');
+const exec_promise = require('../../../src/common/utils/exec_promise');
 const network = require('../../../src/modules/sysinfo/network');
 
 const EXPECTED_WLAN_INTERFACE = 'wlan0';
@@ -64,7 +64,7 @@ jest.mock('os', () => ({
   })),
 }));
 
-jest.mock('../../../src/modules/utils/exec_promise', () => jest.fn(async (command) => (
+jest.mock('../../../src/common/utils/exec_promise', () => jest.fn(async (command) => (
   `${EXPECTED_WLAN_INTERFACE}: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n\
         inet ${EXPECTED_WLAN0_IPV4_ADDR}  netmask ${EXPECTED_WLAN0_IPV4_NETMASK}  broadcast 192.168.1.255\n\
         ether ${EXPECTED_WLAN0_MAC}  txqueuelen 1000  (Ethernet)\n\

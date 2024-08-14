@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const os = require('os');
-const exec_promise = require('../utils/exec_promise');
+const exec_promise = require('../../common/utils/exec_promise');
 
 const get_network_interfaces = () => {
   const { lo, ...interfaces } = os.networkInterfaces();

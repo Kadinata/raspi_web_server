@@ -28,7 +28,7 @@ describe('Exit Handler Utility Module Tests', () => {
     expect(process.on).toHaveBeenCalledTimes(0);
     expect(process.exit).toHaveBeenCalledTimes(0);
 
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     expect(process.on).toHaveBeenCalledTimes(3);
     expect(process.exit).toHaveBeenCalledTimes(0);
 
@@ -36,19 +36,19 @@ describe('Exit Handler Utility Module Tests', () => {
   });
 
   it('should register an exit handler callback successfully', () => {
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     const mock_callback = jest.fn();
     expect(() => exitHandler.register(mock_callback)).not.toThrow();
     expect(mock_callback).toHaveBeenCalledTimes(0);
   });
 
   it('should throw an error when attempting to register a non-function exit handler', () => {
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     expect(() => exitHandler.register(null)).toThrow();
   });
 
   it('should invoke registered callbacks on an exit signal', () => {
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     const mock_callback = jest.fn();
     expect(() => exitHandler.register(mock_callback)).not.toThrow();
     expect(mock_callback).toHaveBeenCalledTimes(0);
@@ -59,7 +59,7 @@ describe('Exit Handler Utility Module Tests', () => {
   });
 
   it('should invoke registered callbacks on a SIGINT signal', () => {
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     const mock_callback = jest.fn();
     expect(() => exitHandler.register(mock_callback)).not.toThrow();
     expect(mock_callback).toHaveBeenCalledTimes(0);
@@ -70,7 +70,7 @@ describe('Exit Handler Utility Module Tests', () => {
   });
 
   it('should handle but not invoke registered callbacks on an unknown exception', () => {
-    const exitHandler = require('../../../src/modules/utils/exit_handler');
+    const exitHandler = require('../../../src/common/utils/exit_handler');
     const mock_callback = jest.fn();
     expect(() => exitHandler.register(mock_callback)).not.toThrow();
     expect(mock_callback).toHaveBeenCalledTimes(0);

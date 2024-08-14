@@ -5,7 +5,7 @@ const passport = require('passport');
 const jwtsm = require('../../modules/jwt/jwt_secret_manager');
 const database = require('../../modules/database');
 const authModule = require('../../modules/auth');
-const exitHandler = require('../../modules/utils/exit_handler');
+const exitHandler = require('../../common/utils/exit_handler');
 
 const initialize = async (JWT_SECRET_FILE, DB_FILE) => {
 

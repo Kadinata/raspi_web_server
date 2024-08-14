@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const hdd = require('../../../src/modules/sysinfo/hdd');
-const exec_promise = require('../../../src/modules/utils/exec_promise');
+const exec_promise = require('../../../src/common/utils/exec_promise');
 
 EXPECTED_COMMAND = 'df -T -BM -x tmpfs -x devtmpfs -x rootfs';
 EXPECTED_RESULTS = [
@@ -32,7 +32,7 @@ Filesystem     Type 1M-blocks  Used Available Use% Mounted on\n\
 /dev/mmcblk0p1 vfat      253M   49M      204M  20% /boot\n\
 ";
 
-jest.mock('../../../src/modules/utils/exec_promise', () => jest.fn(async (command) => COMMAND_OUTPUT));
+jest.mock('../../../src/common/utils/exec_promise', () => jest.fn(async (command) => COMMAND_OUTPUT));
 
 describe('HDD Information Tests', () => {
   it('should return hdd information correctly', async () => {

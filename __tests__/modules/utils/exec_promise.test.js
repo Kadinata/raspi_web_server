@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const child_process = require('child_process');
-const exec_promise = require('../../../src/modules/utils/exec_promise');
+const exec_promise = require('../../../src/common/utils/exec_promise');
 
 const EXEC_COMMAND_SUCCESS = 'This command should succeed';
 const EXEC_COMMAND_FAILURE = 'This command should fail';

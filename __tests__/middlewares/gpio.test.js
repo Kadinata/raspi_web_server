@@ -4,7 +4,7 @@
 const gpio_middleware = require('../../src/middlewares/gpio');
 const GpioModule = require('../../src/modules/gpio');
 const sse = require('../../src/modules/event_manager/sse_handler');
-const exit_handler = require('../../src/modules/utils/exit_handler');
+const exit_handler = require('../../src/common/utils/exit_handler');
 
 const mock_gpio_destroy = jest.fn();
 
@@ -15,7 +15,7 @@ jest.mock('../../src/modules/gpio', () => ({
   })),
 }));
 
-jest.mock('../../src/modules/utils/exit_handler', () => {
+jest.mock('../../src/common/utils/exit_handler', () => {
   mock_callbacks = [];
   return ({
     register: jest.fn((callbacks) => {

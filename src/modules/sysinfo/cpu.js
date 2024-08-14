@@ -2,8 +2,8 @@
 //  
 //===========================================================================
 const os = require('os');
-const exec_promise = require('../utils/exec_promise');
-const { cacheResultAsync } = require('../utils/cache_result');
+const exec_promise = require('../../common/utils/exec_promise');
+const { cacheResultAsync } = require('../../common/utils/cache_result');
 
 const get_cpu_temp = async () => {
   const command = "/usr/bin/vcgencmd measure_temp";
