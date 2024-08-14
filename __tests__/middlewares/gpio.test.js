@@ -3,7 +3,7 @@
 //===========================================================================
 const gpio_middleware = require('../../src/middlewares/gpio');
 const GpioModule = require('../../src/modules/gpio');
-const sse = require('../../src/modules/event_manager/sse_handler');
+const sse = require('../../src/common/event_manager/sse_handler');
 const exit_handler = require('../../src/common/utils/exit_handler');
 
 const mock_gpio_destroy = jest.fn();

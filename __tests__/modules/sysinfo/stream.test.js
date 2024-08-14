@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const stream = require('../../../src/modules/sysinfo/stream');
-const DataSampler = require('../../../src/modules/event_manager/data_sampler');
+const DataSampler = require('../../../src/common/event_manager/data_sampler');
 
 const EXPECTED_SYSTIME_SAMPLER_PERIOD = 1000;
 const EXPECTED_RESOURCE_SAMPLER_PERIOD = 10000;
@@ -32,7 +32,7 @@ const SYSINFO_MOCK = {
   },
 };
 
-jest.mock('../../../src/modules/event_manager/data_sampler');
+jest.mock('../../../src/common/event_manager/data_sampler');
 
 beforeEach(() => {
   jest.clearAllMocks();

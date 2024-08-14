@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const DataSampler = require('../event_manager/data_sampler');
+const DataSampler = require('../../common/event_manager/data_sampler');
 
 const initialize = (sysinfo, data_handler_cb) => {
 

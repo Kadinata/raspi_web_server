@@ -3,7 +3,7 @@
 //===========================================================================
 const sysinfo_middleware = require('../../src/middlewares/sysinfo');
 const sysinfoModule = require('../../src/modules/sysinfo');
-const sse = require('../../src/modules/event_manager/sse_handler');
+const sse = require('../../src/common/event_manager/sse_handler');
 
 const mock_sysinfo_stream_start = jest.fn();
 const mock_sysinfo_stream_stop = jest.fn();

@@ -3,7 +3,7 @@
 //===========================================================================
 const { EventEmitter } = require('events');
 const STATUS_CODE = require('../../__utils__/status_codes');
-const SSE = require('../../../src/modules/event_manager/sse_handler');
+const SSE = require('../../../src/common/event_manager/sse_handler');
 
 const TEST_SUBJECT_1 = 'subject_1';
 const TEST_SUBJECT_2 = 'subject_2';

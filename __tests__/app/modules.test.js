@@ -6,7 +6,7 @@ const auth_middleware = require('../../src/middlewares/auth/auth');
 const gpio_middleware = require('../../src/middlewares/gpio/gpio');
 const sysinfo_middleware = require('../../src/middlewares/sysinfo/sysinfo');
 const sse_middleware = require('../../src/middlewares/sse');
-const sse = require('../../src/modules/event_manager/sse_handler');
+const sse = require('../../src/common/event_manager/sse_handler');
 const app_modules = require('../../src/app/modules');
 
 const JWT_SECRET_PATH = 'path/to/jwt/secret.key';

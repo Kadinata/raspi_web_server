@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
-const RateLimitedEmitter = require('../../../src/modules/event_manager/rate_limited_emitter');
+const RateLimitedEmitter = require('../../../src/common/event_manager/rate_limited_emitter');
 
 const MIN_RATE_LIMIT = 50;
 const DEFAULT_RATE_LIMIT = 100;

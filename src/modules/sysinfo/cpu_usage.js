@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const os = require('os');
-const DataSampler = require('../event_manager/data_sampler');
+const DataSampler = require('../../common/event_manager/data_sampler');
 const logger = require('../../common/logger').getLogger('CPU_USAGE');
 
 /**

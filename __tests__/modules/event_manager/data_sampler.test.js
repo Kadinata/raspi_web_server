@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const { EventEmitter } = require('events');
-const DataSampler = require('../../../src/modules/event_manager/data_sampler');
+const DataSampler = require('../../../src/common/event_manager/data_sampler');
 
 const create_data_generator = () => {
   let value = 0;

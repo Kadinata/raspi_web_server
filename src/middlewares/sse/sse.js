@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const sse = require('../../modules/event_manager/sse_handler');
+const sse = require('../../common/event_manager/sse_handler');
 
 const initialize = (name) => {
 
