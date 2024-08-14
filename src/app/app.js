@@ -9,7 +9,7 @@ const app_modules = require('./modules');
 const api_routes = require('./api_routes');
 const static_routes = require('../routes/static');
 const { requestLogger } = require('../common/logger');
-const { ErrorHandler } = require('../modules/endpoint_handler');
+const { ErrorHandler } = require('../common/endpoint_handler');
 
 const initialize = async (config) => {
 

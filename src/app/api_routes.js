@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const express = require('express');
-const { NotFoundHandler } = require('../modules/endpoint_handler');
+const { NotFoundHandler } = require('../common/endpoint_handler');
 const authRoutes = require('../routes/auth');
 const sysinfoRoutes = require('../routes/sysinfo');
 const gpioRoutes = require('../routes/gpio');

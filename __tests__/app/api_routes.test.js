@@ -9,7 +9,7 @@ const gpioRoutes = require('../../src/routes/gpio');
 const sysinfoRoutes = require('../../src/routes/sysinfo');
 const heartbeatRoutes = require('../../src/routes/heartbeat');
 const api_routes = require('../../src/app/api_routes');
-const error_handler = require('../../src/modules/endpoint_handler/error_handler');
+const error_handler = require('../../src/common/endpoint_handler/error_handler');
 
 const STATUS_CODE = require('../__utils__/status_codes');
 
@@ -46,7 +46,7 @@ jest.mock('../../src/routes/auth');
 jest.mock('../../src/routes/sysinfo');
 jest.mock('../../src/routes/gpio');
 jest.mock('../../src/routes/heartbeat');
-jest.mock('../../src/modules/endpoint_handler/error_handler');
+jest.mock('../../src/common/endpoint_handler/error_handler');
 
 describe('Top Level API Router Tests', () => {
 

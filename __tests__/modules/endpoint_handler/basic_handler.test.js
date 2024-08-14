@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const handlers = require('../../../src/modules/endpoint_handler');
+const handlers = require('../../../src/common/endpoint_handler');
 
 const TEST_DATA = { data: 'some data' };
 const TEST_REQ = {

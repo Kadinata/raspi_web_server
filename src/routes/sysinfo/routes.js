@@ -2,7 +2,7 @@
 //  
 //===========================================================================
 const express = require('express');
-const { getHandler, validateHandler } = require('../../modules/endpoint_handler');
+const { getHandler, validateHandler } = require('../../common/endpoint_handler');
 const protectedRoute = require('../../middlewares/auth/protected_route');
 
 const validateSysinfo = validateHandler((req) => {

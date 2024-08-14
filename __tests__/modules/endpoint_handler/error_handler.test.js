@@ -1,7 +1,7 @@
 //===========================================================================
 //  
 //===========================================================================
-const handlers = require('../../../src/modules/endpoint_handler');
+const handlers = require('../../../src/common/endpoint_handler');
 const Errors = require('../../../src/common/status_codes/error_codes');
 
 const make_res = () => {
