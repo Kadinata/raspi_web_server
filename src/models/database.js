@@ -12,7 +12,7 @@ const initialize = async (path_to_db_file) => {
   const sequelize = new Sequelize({
     dialect: 'sqlite',
     storage: path_to_db_file || _IM_MEMORY_DB,
-    logging: (message) => logger.debug(message),
+    logging: (message) => logger.info(message),
   });
 
   const close = () => {
