@@ -21,10 +21,10 @@ class Auth {
     if (user !== null) return null;
 
     const hashed_password = await bcrypt.hash(password, this._salt_rounds);
-    this._user_model.create(username, hashed_password);
+    this._user_model.create({username, password: hashed_password});
 
     const new_user = await this._user_model.findByUserName(username);
-    return this._user_model.sanitize(new_user);
+    return new_user.sanitize();
   }
 
   async authenticateUser(username, password) {
@@ -32,7 +32,7 @@ class Auth {
     if (user === null) return null;
 
     const password_matched = await bcrypt.compare(password, user.password);
-    return password_matched ? this._user_model.sanitize(user) : null;
+    return password_matched ? user.sanitize() : null;
   }
 
   async updateUserPassword(user_id, current_password, new_password) {
@@ -68,12 +68,12 @@ class Auth {
       const message = 'Password update failed';
       return { ...result, error: { message } };
     }
-    return { ...result, user: this._user_model.sanitize(user) };
+    return { ...result, user: user.sanitize() };
   };
 
   async findUserById(user_id) {
     const user = await this._user_model.findById(user_id);
-    return this._user_model.sanitize(user);
+    return user?.sanitize() || null;
   }
 }
 

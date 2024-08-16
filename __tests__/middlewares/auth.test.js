@@ -3,9 +3,8 @@
 //===========================================================================
 const auth_middleware = require('../../src/middlewares/auth');
 const Auth = require('../../src/modules/auth/auth');
-const User = require('../../src/modules/database/users');
 const jwtsm = require('../../src/modules/jwt/jwt_secret_manager');
-const database = require('../../src/modules/database');
+const { database } = require('../../src/models');
 const passport = require('passport');
 const exit_handler = require('../../src/common/utils/exit_handler');
 
@@ -13,17 +12,16 @@ const MOCK_JWT_SECRET = 'Test JWT Secret';
 const MOCK_JWT_SECRET_FILE = '/path/to/jwt/secret';
 const MOCK_DB_FILE = '/path/to/db/file';
 
-const MOCK_USER_MODEL = new User(null);
 const mockDBClose = jest.fn();
 
 jest.mock('../../src/modules/jwt/jwt_secret_manager', () => ({
   load_or_create: jest.fn(async (jwt_secret_file) => MOCK_JWT_SECRET),
 }));
 
-jest.mock('../../src/modules/database', () => ({
+jest.mock('../../src/models/database', () => ({
   initialize: jest.fn(async (db_file_path) => {
     return {
-      user_model: MOCK_USER_MODEL,
+      sequelize: {},
       close: mockDBClose,
     };
   }),
