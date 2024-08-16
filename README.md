@@ -108,6 +108,7 @@ Domain | Library / Framework
 HTTP Server | [Express](http://expressjs.com/), [Node.js](http://nodejs.org/)
 Authentication | [Passport.js](https://www.passportjs.org/), [JSON Web Token](https://www.npmjs.com/package/jsonwebtoken)
 Database | [SQLite3](https://github.com/TryGhost/node-sqlite3)
+ORM | [Sequelize](https://sequelize.org/)
 Password Hashing | [BCrypt](https://github.com/kelektiv/node.bcrypt.js#readme)
 GPIO Control | [onoff](https://github.com/fivdi/onoff)
 Logging | [Winston](https://github.com/winstonjs/winston), [Morgan](https://github.com/expressjs/morgan)
