@@ -4,6 +4,7 @@
 const sysinfo_middleware = require('../../src/middlewares/sysinfo');
 const sysinfoModule = require('../../src/modules/sysinfo');
 const sse = require('../../src/common/event_manager/sse_handler');
+const mock_req_res_next = require('../__utils__/mock_req_res_next');
 
 const mock_sysinfo_stream_start = jest.fn();
 const mock_sysinfo_stream_stop = jest.fn();
@@ -44,9 +45,8 @@ describe('SysInfo Middleware Tests', () => {
   it('should attach a sysinfo instance to the req object', () => {
     const sse_handler = sse.Handler('Test Sysinfo');
 
-    const req = { sse_handler };
-    const res = {};
-    const next = jest.fn();
+    const { req, res, next } = mock_req_res_next();
+    req.sse_handler = sse_handler;
 
     const provider = sysinfo_middleware.initialize(sse_handler);
 
@@ -71,9 +71,8 @@ describe('SysInfo Middleware Tests', () => {
   it('should start sysinfo stream if there is a client and stop it if there is no client', () => {
     const sse_handler = sse.Handler('Test Sysinfo');
 
-    const req = { sse_handler };
-    const res = {};
-    const next = jest.fn();
+    const { req, res, next } = mock_req_res_next();
+    req.sse_handler = sse_handler;
 
     const provider = sysinfo_middleware.initialize(sse_handler);
     expect(req.sysinfo).toBeUndefined();

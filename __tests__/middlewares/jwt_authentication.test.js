@@ -7,6 +7,7 @@ const jwt = require('jsonwebtoken');
 const JWTStrategy = require('passport-jwt').Strategy;
 const jwtAuthentication = require('../../src/middlewares/auth/jwt_authentication');
 const Errors = require('../../src/common/status_codes/error_codes');
+const mock_req_res_next = require('../__utils__/mock_req_res_next');
 
 const MOCK_JWT_SECRET = 'This is a test JWT secret';
 const JWT_FALSE_KEY = 'This is another JWT secret';
@@ -37,14 +38,8 @@ const handlePayload = jest.fn((payload, done) => {
   return done(null, user);
 });
 
-const create_req_res_next = () => ({
-  req: {},
-  res: {},
-  next: jest.fn(() => null),
-});
-
 const setup_passport = () => {
-  const { req, res, next } = create_req_res_next();
+  const { req, res, next } = mock_req_res_next();
   const handler = passport.initialize();
   handler(req, res, () => null);
   return { req, res, next };

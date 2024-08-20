@@ -7,6 +7,7 @@ const LocalStrategy = require('passport-local').Strategy;
 const JWTStrategy = require('passport-jwt').Strategy;
 const passport_config = require('../../../src/modules/auth/auth_passport_config');
 const AuthMode = require('../../../src/modules/auth/auth_mode');
+const mock_req_res_next = require('../../__utils__/mock_req_res_next');
 
 const TEST_JWT_SECRET = 'This is a test jwt secret key';
 
@@ -89,8 +90,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a new user registration succesfully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     req.body = TEST_USERS[0];
@@ -110,8 +110,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a failed user registration gracefully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     req.body = TEST_USERS[0];
@@ -141,8 +140,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a password login succesfully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     req.body = TEST_USERS[0];
@@ -173,8 +171,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a failed password login gracefully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     req.body = TEST_USERS[0];
@@ -209,8 +206,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a jwt login succesfully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     add_token(req, { user: TEST_USERS[0].username }, TEST_JWT_SECRET);
@@ -226,8 +222,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a failed jwt login gracefully', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
     const incorrect_jwt_key = 'This is an incorrect JWT secret key';
 
@@ -245,8 +240,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle a failed jwt login gracefully due to nonexistent user', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     add_token(req, null, TEST_JWT_SECRET);
@@ -263,8 +257,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle bad request properly', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     /** Password login without credentials */
@@ -290,8 +283,7 @@ describe('Auth Passport Configuration Tests', () => {
   });
 
   it('should handle internal errors properly', () => {
-    const req = {};
-    const res = {};
+    const { req, res } = mock_req_res_next();
     const session = 'false';
 
     req.body = TEST_USERS[0];

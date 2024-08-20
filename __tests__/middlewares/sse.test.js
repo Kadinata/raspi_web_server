@@ -3,6 +3,7 @@
 //===========================================================================
 const { EventEmitter } = require('events');
 const sse_middleware = require('../../src/middlewares/sse');
+const mock_req_res_next = require('../__utils__/mock_req_res_next');
 
 describe('SSE Middleware Tests', () => {
 
@@ -24,7 +25,7 @@ describe('SSE Middleware Tests', () => {
   /** The middleware should attach the sse handler instance to req objects */
   it('should attach the sse handler instance to the req object', () => {
 
-    const req = {};
+    const { req } = mock_req_res_next();
 
     /** Initialize the middleware */
     const { provider, handler } = sse_middleware.initialize('Test SSE Handler');

@@ -5,6 +5,7 @@ const gpio_middleware = require('../../src/middlewares/gpio');
 const GpioModule = require('../../src/modules/gpio');
 const sse = require('../../src/common/event_manager/sse_handler');
 const exit_handler = require('../../src/common/utils/exit_handler');
+const mock_req_res_next = require('../__utils__/mock_req_res_next');
 
 const mock_gpio_destroy = jest.fn();
 
@@ -60,9 +61,8 @@ describe('GPIO Middleware Tests', () => {
 
     const sse_handler = sse.Handler("Test GPIO");
 
-    const req = { sse_handler };
-    const res = {};
-    const next = jest.fn();
+    const { req, res, next } = mock_req_res_next();
+    req.sse_handler = sse_handler;
 
     /** Initialize the middleware */
     const provider = gpio_middleware.initialize(sse_handler);
