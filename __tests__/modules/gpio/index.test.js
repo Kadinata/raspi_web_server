@@ -12,51 +12,37 @@ jest.mock('onoff', () => ({
   Gpio: jest.fn(),
 }));
 
-describe('GPIO Top Level Module Tests', () => {
+describe('GPIO Top Level Module', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should initializes the module correctly with callback', () => {
-    const test_data = 'test data';
-    const gpio_callback = jest.fn();
-    const rate_limit = 7357;
+  describe('initialization', () => {
+    it('should instantiate a GpioBank instance', () => {
+      expect(GpioBank).toHaveBeenCalledTimes(0);
+      GpioModule.initialize();
 
-    expect(typeof GpioModule.initialize).toEqual('function');
-    expect(GpioBank).toHaveBeenCalledTimes(0);
-    expect(GpioController).toHaveBeenCalledTimes(0);
+      expect(GpioBank).toHaveBeenCalledTimes(1);
+      expect(GpioBank).toHaveBeenCalledWith(onoff.Gpio);
+    });
 
-    const gpio = GpioModule.initialize(gpio_callback, rate_limit);
+    it('should instantiate a GpioController instance and return it', () => {
+      expect(GpioController).toHaveBeenCalledTimes(0);
+      const gpio = GpioModule.initialize();
 
-    expect(GpioBank).toHaveBeenCalledTimes(1);
-    expect(GpioBank).toHaveBeenCalledWith(onoff.Gpio);
-    expect(GpioController).toHaveBeenCalledTimes(1);
-    expect(gpio instanceof GpioController).toEqual(true);
-    expect(gpio.onData).toHaveBeenCalledTimes(1);
+      expect(GpioController).toHaveBeenCalledTimes(1);
+      expect(gpio instanceof GpioController).toEqual(true);
+    });
 
-    expect(gpio_callback).toHaveBeenCalledTimes(0);
-    expect(typeof gpio.onData.mock.calls[0][0]).toEqual('function');
+    it('should instantiate a GpioController instance with the provided rate limit', () => {
+      const rate_limit = 7357;
 
-    gpio.onData.mock.calls[0][0](test_data);
-    expect(gpio_callback).toHaveBeenCalledTimes(1);
-    expect(gpio_callback).toHaveBeenCalledWith(test_data);
-  });
+      GpioModule.initialize(rate_limit);
 
-  it('should initializes the module correctly without callback', () => {
-    const rate_limit = 7357;
-
-    expect(typeof GpioModule.initialize).toEqual('function');
-    expect(GpioBank).toHaveBeenCalledTimes(0);
-    expect(GpioController).toHaveBeenCalledTimes(0);
-
-    const gpio = GpioModule.initialize(null, rate_limit);
-
-    expect(GpioBank).toHaveBeenCalledTimes(1);
-    expect(GpioBank).toHaveBeenCalledWith(onoff.Gpio);
-    expect(GpioController).toHaveBeenCalledTimes(1);
-    expect(gpio instanceof GpioController).toEqual(true);
-    expect(gpio.onData).toHaveBeenCalledTimes(0);
+      expect(GpioController).toHaveBeenCalledTimes(1);
+      expect(GpioController.mock.calls[0][1]).toEqual(rate_limit);      
+    });
   });
 });
 //===========================================================================
