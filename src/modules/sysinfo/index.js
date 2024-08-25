@@ -26,14 +26,14 @@ const createSysInfoFetcher = (cpu_usage_sampler) => async () => {
   return { os_info, cpu_info, cpu_usage, hdd_info, mem_info, netstats, uptime, localtime, startTime };
 };
 
-const initialize = (stream_listener_cb) => {
+const initialize = () => {
   const cpu_usage = new CpuUsage();
   cpu_usage.start(CPU_USAGE_SAMPLE_PERIOD);
 
   const fetchAll = createSysInfoFetcher(cpu_usage);
 
   const sysinfo = { memory, os, cpu, hdd, network, systime, cpu_usage, fetchAll };
-  const stream = sysinfoStream.initialize(sysinfo, stream_listener_cb);
+  const stream = sysinfoStream.initialize(sysinfo);
 
   logger.info('System info module initialized');
   return { ...sysinfo, stream };

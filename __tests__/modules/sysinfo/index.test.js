@@ -24,20 +24,6 @@ const EXPECTED_START_TIME_INFO = 'This is a start time data';
 const EXPECTED_STREAM_HANDLE = 'This is a system info stream handle';
 const EXPECTED_CPU_USAGE_SAMPLE_PERIOD = 10000;
 
-const EXPECTED_FETCH_ALL_RESULT = {
-  os_info: EXPECTED_OS_INFO,
-  cpu_info: EXPECTED_CPU_INFO,
-  cpu_usage: EXPECTED_CPU_USAGE_INFO,
-  hdd_info: EXPECTED_HDD_INFO,
-  mem_info: EXPECTED_MEMORY_INFO, 
-  netstats: EXPECTED_NETWORK_INFO,
-  uptime: EXPECTED_UPTIME_INFO, 
-  localtime: EXPECTED_LOCAL_TIME_INFO, 
-  startTime: EXPECTED_START_TIME_INFO,
-};
-
-const STREAM_LISTENER_CB_HANDLE = () => jest.fn(() => { });
-
 jest.mock('../../../src/modules/sysinfo/cpu_usage');
 jest.mock('../../../src/modules/sysinfo/cpu', () => jest.fn(() => EXPECTED_CPU_INFO));
 jest.mock('../../../src/modules/sysinfo/memory', () => jest.fn(() => EXPECTED_MEMORY_INFO));
@@ -50,94 +36,174 @@ jest.mock('../../../src/modules/sysinfo/systime', () => ({
   getStartTime: jest.fn(() => EXPECTED_START_TIME_INFO),
 }));
 jest.mock('../../../src/modules/sysinfo/stream', () => ({
-  initialize: jest.fn((sysinfo, listener_cb) => EXPECTED_STREAM_HANDLE),
+  initialize: jest.fn((sysinfo) => EXPECTED_STREAM_HANDLE),
 }));
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Top-Level System Info Module Tests', () => {
-  it('should initializes system info module correctly', () => {
-    expect(CpuUsage).not.toHaveBeenCalled();
-    expect(sysinfoStream.initialize).not.toHaveBeenCalled();
+describe('Top-Level System Info Module', () => {
+  describe('initialization', () => {
+    it('should instantiate a CPU usage sampler and start it', () => {
+      expect(CpuUsage).not.toHaveBeenCalled();
 
-    const result = sysInfo.initialize(STREAM_LISTENER_CB_HANDLE);
-    expect(CpuUsage).toHaveBeenCalledTimes(1);
-    expect(sysinfoStream.initialize).toHaveBeenCalledTimes(1);
+      sysInfo.initialize();
+      expect(CpuUsage).toHaveBeenCalledTimes(1);
+
+      const CpuUsageInstance = CpuUsage.mock.instances[0];
+      expect(CpuUsageInstance.start).toHaveBeenCalledWith(EXPECTED_CPU_USAGE_SAMPLE_PERIOD);
+    });
+
+    it('should instantiate a system info stream', () => {
+      expect(sysinfoStream.initialize).not.toHaveBeenCalled();
+
+      const { stream, ...sysinfo } = sysInfo.initialize();
+      expect(sysinfoStream.initialize).toHaveBeenCalledTimes(1);
+      expect(sysinfoStream.initialize).toHaveBeenCalledWith(sysinfo);
+    });
+
+    it('should return a function to retrieve device OS information', () => {
+      const { os } = sysInfo.initialize();
+      expect(typeof os).toEqual('function');
+      expect(os()).toEqual(EXPECTED_OS_INFO);
+    });
+
+    it('should return a function to retrieve device CPU information', () => {
+      const { cpu } = sysInfo.initialize();
+      expect(typeof cpu).toEqual('function');
+      expect(cpu()).toEqual(EXPECTED_CPU_INFO);
+    });
+
+    it('should return a function to retrieve device storage information', () => {
+      const { hdd } = sysInfo.initialize();
+      expect(typeof hdd).toEqual('function');
+      expect(hdd()).toEqual(EXPECTED_HDD_INFO);
+    });
+
+    it('should return a function to retrieve device memory information', () => {
+      const { memory } = sysInfo.initialize();
+      expect(typeof memory).toEqual('function');
+      expect(memory()).toEqual(EXPECTED_MEMORY_INFO);
+    });
+
+    it('should return a function to retrieve device network statistics information', () => {
+      const { network } = sysInfo.initialize();
+      expect(typeof network).toEqual('function');
+      expect(network()).toEqual(EXPECTED_NETWORK_INFO);
+    });
+
+    it('should return a function to retrieve device time information', () => {
+      const { systime } = sysInfo.initialize();
+
+      expect(typeof systime).toEqual('object');
+      expect(typeof systime.getLocaltime).toEqual('function');
+      expect(typeof systime.getStartTime).toEqual('function');
+      expect(typeof systime.getUptime).toEqual('function');
+
+      expect(systime.getLocaltime()).toEqual(EXPECTED_LOCAL_TIME_INFO);
+      expect(systime.getStartTime()).toEqual(EXPECTED_START_TIME_INFO);
+      expect(systime.getUptime()).toEqual(EXPECTED_UPTIME_INFO);
+    });
+
+    it('should return a function to retrieve all device system information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(typeof fetchAll).toEqual('function');
+    });
+
+    it('should return the CPU usage sampler', () => {
+      const { cpu_usage } = sysInfo.initialize();
+      expect(cpu_usage).toBeInstanceOf(CpuUsage);
+    });
+
+    it('should return a stream handler object', () => {
+      const { stream } = sysInfo.initialize();
+      expect(stream).toEqual(EXPECTED_STREAM_HANDLE);
+    });
   });
 
-  it('should return the system info object correctly', async () => {
-    expect(CpuUsage).not.toHaveBeenCalled();
-    expect(sysinfoStream.initialize).not.toHaveBeenCalled();
+  describe('fetching all compiled system info data', () => {
+    it('should contain device OS information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(os).not.toHaveBeenCalled();
 
-    const result = sysInfo.initialize(STREAM_LISTENER_CB_HANDLE);
-    const { stream, ...sysinfo } = result;
-    const { os, cpu, hdd, memory, network, systime, cpu_usage, fetchAll } = sysinfo;
+      const { os_info } = await fetchAll();
+      expect(os).toHaveBeenCalledTimes(1);
+      expect(os_info).toEqual(EXPECTED_OS_INFO);
+    });
 
-    expect(CpuUsage).toHaveBeenCalledTimes(1);
-    expect(sysinfoStream.initialize).toHaveBeenCalledTimes(1);
-    expect(sysinfoStream.initialize).toHaveBeenCalledWith(sysinfo, STREAM_LISTENER_CB_HANDLE);
+    it('should contain device CPU information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(cpu).not.toHaveBeenCalled();
 
-    const CpuUsageInstance = CpuUsage.mock.instances[0];
-    expect(CpuUsageInstance.start).toHaveBeenCalledWith(EXPECTED_CPU_USAGE_SAMPLE_PERIOD);
+      const { cpu_info } = await fetchAll();
+      expect(cpu).toHaveBeenCalledTimes(1);
+      expect(cpu_info).toEqual(EXPECTED_CPU_INFO);
+    });
 
-    expect(typeof os).toEqual('function');
-    expect(typeof cpu).toEqual('function');
-    expect(typeof hdd).toEqual('function');
-    expect(typeof memory).toEqual('function');
-    expect(typeof network).toEqual('function');
-    expect(typeof fetchAll).toEqual('function');
-    expect(typeof systime).toEqual('object');
-    expect(typeof systime.getLocaltime).toEqual('function');
-    expect(typeof systime.getStartTime).toEqual('function');
-    expect(typeof systime.getUptime).toEqual('function');
-    expect(cpu_usage).toBeInstanceOf(CpuUsage);
-    expect(stream).toEqual(EXPECTED_STREAM_HANDLE);
+    it('should contain device CPU usage information', async () => {
+      const { fetchAll } = sysInfo.initialize();
 
-    expect(os()).toEqual(EXPECTED_OS_INFO);
-    expect(cpu()).toEqual(EXPECTED_CPU_INFO);
-    expect(hdd()).toEqual(EXPECTED_HDD_INFO);
-    expect(memory()).toEqual(EXPECTED_MEMORY_INFO);
-    expect(network()).toEqual(EXPECTED_NETWORK_INFO);
-    expect(systime.getLocaltime()).toEqual(EXPECTED_LOCAL_TIME_INFO);
-    expect(systime.getStartTime()).toEqual(EXPECTED_START_TIME_INFO);
-    expect(systime.getUptime()).toEqual(EXPECTED_UPTIME_INFO);
-  });
+      CpuUsage.mock.instances[0].measurements = EXPECTED_CPU_USAGE_INFO;
 
-  it('should constructed fetchAll return object correctly', async () => {
-    expect(CpuUsage).not.toHaveBeenCalled();
-    expect(sysinfoStream.initialize).not.toHaveBeenCalled();
+      const { cpu_usage } = await fetchAll();
+      expect(cpu_usage).toEqual(EXPECTED_CPU_USAGE_INFO);
+    });
 
-    const result = sysInfo.initialize(STREAM_LISTENER_CB_HANDLE);
-    const { fetchAll } = result;
+    it('should contain device storage information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(hdd).not.toHaveBeenCalled();
 
-    expect(CpuUsage).toHaveBeenCalledTimes(1);
-    expect(sysinfoStream.initialize).toHaveBeenCalledTimes(1);
+      const { hdd_info } = await fetchAll();
+      expect(hdd).toHaveBeenCalledTimes(1);
+      expect(hdd_info).toEqual(EXPECTED_HDD_INFO);
+    });
 
-    CpuUsage.mock.instances[0].measurements = EXPECTED_CPU_USAGE_INFO;
+    it('should contain device memory information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(memory).not.toHaveBeenCalled();
 
-    expect(os).not.toHaveBeenCalled();
-    expect(cpu).not.toHaveBeenCalled();
-    expect(hdd).not.toHaveBeenCalled();
-    expect(memory).not.toHaveBeenCalled();
-    expect(network).not.toHaveBeenCalled();
-    expect(systime.getUptime).not.toHaveBeenCalled();
-    expect(systime.getLocaltime).not.toHaveBeenCalled();
-    expect(systime.getStartTime).not.toHaveBeenCalled();
+      const { mem_info } = await fetchAll();
+      expect(memory).toHaveBeenCalledTimes(1);
+      expect(mem_info).toEqual(EXPECTED_MEMORY_INFO);
+    });
 
-    const fetched_result = await fetchAll();
+    it('should contain device network statistics information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(network).not.toHaveBeenCalled();
 
-    expect(os).toHaveBeenCalledTimes(1);
-    expect(cpu).toHaveBeenCalledTimes(1);
-    expect(hdd).toHaveBeenCalledTimes(1);
-    expect(memory).toHaveBeenCalledTimes(1);
-    expect(network).toHaveBeenCalledTimes(1);
-    expect(systime.getUptime).toHaveBeenCalledTimes(1);
-    expect(systime.getLocaltime).toHaveBeenCalledTimes(1);
-    expect(systime.getStartTime).toHaveBeenCalledTimes(1);
+      const { netstats } = await fetchAll();
+      expect(network).toHaveBeenCalledTimes(1);
+      expect(netstats).toEqual(EXPECTED_NETWORK_INFO);
+    });
 
-    expect(fetched_result).toEqual(EXPECTED_FETCH_ALL_RESULT);
+    it('should contain device uptime information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(systime.getUptime).not.toHaveBeenCalled();
+
+      const { uptime } = await fetchAll();
+      expect(systime.getUptime).toHaveBeenCalledTimes(1);
+      expect(uptime).toEqual(EXPECTED_UPTIME_INFO);
+    });
+
+    it('should contain device local time information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(systime.getLocaltime).not.toHaveBeenCalled();
+
+      const { localtime } = await fetchAll();
+      expect(systime.getLocaltime).toHaveBeenCalledTimes(1);
+      expect(localtime).toEqual(EXPECTED_LOCAL_TIME_INFO);
+    });
+
+
+    it('should contain device start time information', async () => {
+      const { fetchAll } = sysInfo.initialize();
+      expect(systime.getStartTime).not.toHaveBeenCalled();
+
+      const { startTime } = await fetchAll();
+      expect(systime.getStartTime).toHaveBeenCalledTimes(1);
+      expect(startTime).toEqual(EXPECTED_START_TIME_INFO);
+    });
   });
 });
 //===========================================================================
