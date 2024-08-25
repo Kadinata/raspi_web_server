@@ -50,7 +50,7 @@ class DataSampler extends EventEmitter {
    * @param {function} callback - The function to be invoked whenever a new sample is emitted.
    */
   onData(callback) {
-    this.on('data', (data) => callback(data));
+    this.on('data', callback);
   }
 
   /**

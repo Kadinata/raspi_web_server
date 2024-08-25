@@ -3,7 +3,7 @@
 //===========================================================================
 const DataSampler = require('../../common/event_manager/data_sampler');
 
-const initialize = (sysinfo, data_handler_cb) => {
+const initialize = (sysinfo) => {
 
   const systime_sampler = new DataSampler('SysTime', () => sysinfo.systime.getAll());
   const resource_sampler = new DataSampler('SysInfo', async () => {
@@ -24,13 +24,15 @@ const initialize = (sysinfo, data_handler_cb) => {
     resource_sampler.stop();
   };
 
-  if (typeof data_handler_cb === 'function') {
-    sysinfo.cpu_usage.onData((cpu_usage) => data_handler_cb({ cpu_usage }));
-    systime_sampler.onData((data) => data_handler_cb(data));
-    resource_sampler.onData((data) => data_handler_cb(data));
-  }
+  const subscribe = (handler) => {
+    if (typeof handler === 'function') {
+      sysinfo.cpu_usage.onData((cpu_usage) => handler({ cpu_usage }));
+      systime_sampler.onData(handler);
+      resource_sampler.onData(handler);
+    }
+  };
 
-  return { start, stop };
+  return { start, stop, subscribe };
 };
 
 module.exports = { initialize };
